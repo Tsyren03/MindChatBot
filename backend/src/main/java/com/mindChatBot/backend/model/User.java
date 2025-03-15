@@ -1,4 +1,5 @@
 package com.mindChatBot.backend.model;
+
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,5 +15,9 @@ public class User {
     private String email;
     private String password;
     private List<EmotionLog> emotionLogs;
-    private List<JournalEntry> journalEntries;
+    private List<JournalEntry> journalEntries; // Ensure JournalEntry exists!
+
+    public String getUsername() {
+        return email != null ? email.substring(0, email.indexOf("@")) : null;
+    }
 }

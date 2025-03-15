@@ -1,6 +1,7 @@
 package com.mindChatBot.backend.controller;
-import com.example.mentalhealth.model.EmotionLog;
-import com.example.mentalhealth.service.EmotionService;
+
+import com.mindChatBot.backend.model.EmotionLog;
+import com.mindChatBot.backend.service.EmotionLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,16 +11,20 @@ import java.util.List;
 @RequestMapping("/api/emotions")
 public class EmotionController {
 
+    private final EmotionLogService emotionLogService;
+
     @Autowired
-    private EmotionService emotionService;
+    public EmotionController(EmotionLogService emotionLogService) {
+        this.emotionLogService = emotionLogService;
+    }
 
     @PostMapping
     public EmotionLog saveEmotion(@RequestBody EmotionLog emotionLog) {
-        return emotionService.saveEmotion(emotionLog);
+        return emotionLogService.saveEmotionLog(emotionLog);
     }
 
     @GetMapping("/{userId}")
     public List<EmotionLog> getEmotions(@PathVariable String userId) {
-        return emotionService.getEmotionsByUser(userId);
+        return emotionLogService.getEmotionLogsByUserId(userId);
     }
 }

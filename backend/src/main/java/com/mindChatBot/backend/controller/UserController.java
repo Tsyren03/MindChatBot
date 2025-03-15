@@ -1,6 +1,7 @@
 package com.mindChatBot.backend.controller;
-import com.example.mentalhealth.model.User;
-import com.example.mentalhealth.service.UserService;
+
+import com.mindChatBot.backend.model.User;
+import com.mindChatBot.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class UserController {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {

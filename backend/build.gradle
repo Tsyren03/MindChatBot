@@ -9,13 +9,15 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(23) // Update to Java 23
 	}
 }
 
 repositories {
-	mavenCentral()
+	mavenCentral()  // ✅ Make sure this is included
+	maven { url "https://jitpack.io" }  // ✅ Add JitPack if needed
 }
+
 
 dependencies {
 	// Spring Boot Core
@@ -28,9 +30,6 @@ dependencies {
 	// Lombok (for reducing boilerplate code)
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// JSON Web Token (JWT) for Authentication
-	implementation 'io.jsonwebtoken:jjwt:0.11.5'
 
 	// Validation (e.g., @NotNull, @Email)
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -48,6 +47,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Embedded MongoDB for Testing
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.6.0'
 }
 

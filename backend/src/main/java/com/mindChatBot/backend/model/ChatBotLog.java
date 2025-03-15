@@ -1,4 +1,5 @@
 package com.mindChatBot.backend.model;
+
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "chatbot_logs")
-public class ChatbotLog {
+public class ChatBotLog {
     @Id
     private String id;
     private String userId;

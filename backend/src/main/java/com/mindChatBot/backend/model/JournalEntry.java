@@ -8,12 +8,11 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "emotion_logs")
-public class EmotionLog {
+@Document(collection = "journal_entries")
+public class JournalEntry {
     @Id
     private String id;
     private String userId;
     private LocalDate date;
-    private int emotionScore;
-    private String aiInsights;
+    private String content;
 }

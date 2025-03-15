@@ -5,6 +5,7 @@ import com.mindChatBot.backend.repository.EmotionLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class EmotionLogService {
     }
 
     // Get emotion logs within a date range
-    public List<EmotionLog> getEmotionLogsByDateRange(String userId, String startDate, String endDate) {
+    public List<EmotionLog> getEmotionLogsByDateRange(String userId, LocalDate startDate, LocalDate endDate) {
         return emotionLogRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
     }
 

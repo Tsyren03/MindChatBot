@@ -1,18 +1,23 @@
 package com.mindChatBot.backend.controller;
-import com.example.mentalhealth.model.ChatbotLog;
-import com.example.mentalhealth.service.ChatbotService;
+
+import com.mindChatBot.backend.model.ChatBotLog;
+import com.mindChatBot.backend.service.ChatBotLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/chat")
-public class ChatbotController {
+public class ChatBotController {
+
+    private final ChatBotLogService chatBotLogService;
 
     @Autowired
-    private ChatbotService chatbotService;
+    public ChatBotController(ChatBotLogService chatBotLogService) {
+        this.chatBotLogService = chatBotLogService;
+    }
 
     @PostMapping
-    public ChatbotLog chat(@RequestBody ChatbotLog chatRequest) {
-        return chatbotService.processChat(chatRequest);
+    public ChatBotLog chat(@RequestBody ChatBotLog chatRequest) {
+        return chatBotLogService.saveChatBotLog(chatRequest);
     }
 }

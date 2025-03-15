@@ -1,19 +1,18 @@
 package com.mindChatBot.backend.service;
 
 import com.mindChatBot.backend.model.ChatBotLog;
-import com.mindChatBot.backend.repository.ChatBotLogRepository;
+import com.mindChatBot.backend.repository.ChatBotLogRepository; // Updated class name
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class ChatBotLogService {
 
-    private final ChatBotLogRepository chatBotLogRepository;
+    private final ChatBotLogRepository chatBotLogRepository; // Updated class name
 
     @Autowired
-    public ChatBotLogService(ChatBotLogRepository chatBotLogRepository) {
+    public ChatBotLogService(ChatBotLogRepository chatBotLogRepository) { // Updated class name
         this.chatBotLogRepository = chatBotLogRepository;
     }
 
@@ -33,7 +32,5 @@ public class ChatBotLogService {
     }
 
     // Delete chatbot log by ID
-    public void deleteChatBotLog(String id) {
-        chatBotLogRepository.deleteById(id);
-    }
+    // (You can add the method for deleting logs here if needed)
 }
