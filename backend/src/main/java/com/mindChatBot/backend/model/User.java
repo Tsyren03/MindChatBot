@@ -15,9 +15,25 @@ public class User {
     private String email;
     private String password;
     private List<EmotionLog> emotionLogs;
-    private List<JournalEntry> journalEntries; // Ensure JournalEntry exists!
+    private List<JournalEntry> journalEntries; // Ensure JournalEntry class exists!
 
     public String getUsername() {
         return email != null ? email.substring(0, email.indexOf("@")) : null;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

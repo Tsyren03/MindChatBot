@@ -25,7 +25,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserByEmail(String email) {
+    public Optional<Optional<User>> getUserByEmail(String email) {
         return Optional.ofNullable(userRepository.findByEmail(email));
     }
 
