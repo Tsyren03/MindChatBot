@@ -6,15 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User saveUser(User user) {
@@ -25,19 +28,22 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<Optional<User>> getUserByEmail(String email) {
-        return Optional.ofNullable(userRepository.findByEmail(email));
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    // New register method
     public User register(User user) {
-        // Logic for user registration (e.g., save user to the database)
+        // Encrypt the password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    // Existing login method
     public String login(User user) {
-        // Logic for user login
-        return "Login successful for user: " + user.getUsername();
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent() && passwordEncoder.matches(user.getPassword(), existingUser.get().getPassword())) {
+            return "Login successful for user: " + existingUser.get().getUsername();
+        } else {
+            return "Invalid credentials";
+        }
     }
 }
