@@ -1,3 +1,4 @@
+/*
 package com.mindChatBot.backend.config;
 
 import com.mindChatBot.backend.security.JwtFilter;
@@ -43,3 +44,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+*/

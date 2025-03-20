@@ -1,4 +1,4 @@
-package com.mindChatBot.backend.service;
+/*package com.mindChatBot.backend.service;
 
 import com.mindChatBot.backend.model.User;
 import com.mindChatBot.backend.repository.UserRepository;
@@ -57,3 +57,4 @@ public class AuthService {
         return jwtUtil.generateToken(email);
     }
 }
+*/

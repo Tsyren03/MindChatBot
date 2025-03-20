@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")  // Keeping "/api/user" for user-related operations
 public class UserController {
 
     private final UserService userService;
@@ -16,13 +16,5 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.register(user);
-    }
-
-    @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        return userService.login(user);
-    }
+    // You can add other user-related endpoints here (e.g., update user, delete user, etc.)
 }

@@ -1,4 +1,4 @@
-package com.mindChatBot.backend.security;
+/*package com.mindChatBot.backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -47,4 +47,4 @@ public class JwtUtil {
                 .getExpiration()
                 .before(new Date());
     }
-}
+}*/

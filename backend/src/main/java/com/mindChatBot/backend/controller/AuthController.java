@@ -1,4 +1,4 @@
-package com.mindChatBot.backend.controller;
+/*package com.mindChatBot.backend.controller;
 
 import com.mindChatBot.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,3 +38,4 @@ public class AuthController {
         }
     }
 }
+*/

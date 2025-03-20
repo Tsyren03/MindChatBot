@@ -1,4 +1,4 @@
-package com.mindChatBot.backend.security;
+/*package com.mindChatBot.backend.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,3 +52,4 @@ public class JwtFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 }
+*/
