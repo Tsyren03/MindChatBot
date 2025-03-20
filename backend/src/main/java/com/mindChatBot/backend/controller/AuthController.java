@@ -23,8 +23,18 @@ public class AuthController {
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody Map<String, String> request) {
         System.out.println("Register request received: " + request);
-        String token = authService.register(request.get("email"), request.get("password"));
-        return Map.of("token", token);
-    }
 
+        // Retrieve email and password from the request body
+        String email = request.get("email");
+        String password = request.get("password");
+
+        // Call the authService to register the user
+        try {
+            String token = authService.register(email, password); // This will now handle uniqueness check
+            return Map.of("token", token);
+        } catch (RuntimeException e) {
+            // Return an error message if the email is already taken
+            return Map.of("error", e.getMessage());
+        }
+    }
 }
