@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/MindChatBot.iml" filepath="$PROJECT_DIR$/.idea/MindChatBot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mindChatBot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mindChatBot.main.iml" />
     </modules>
   </component>
 </project>
