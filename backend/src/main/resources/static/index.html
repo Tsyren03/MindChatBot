@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Support</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <!-- Mood Tracker -->
+    <div class="section mood-tracker">
+        <h2>Mood Tracker</h2>
+        <div class="calendar" id="calendar"></div>
+        <div class="emotion-buttons">
+            <button onclick="setMood('😞')">😞 Bad</button>
+            <button onclick="setMood('😕')">😕 Poor</button>
+            <button onclick="setMood('😐')">😐 Neutral</button>
+            <button onclick="setMood('🙂')">🙂 Good</button>
+            <button onclick="setMood('😃')">😃 Best</button>
+        </div>
+        <div class="current-date" id="current-date"></div>
+    </div>
+
+    <!-- Journaling -->
+    <div class="section journaling">
+        <h2>Journaling</h2>
+        <div class="note">
+            <a href="new-note.html">Start a new note</a>
+        </div>
+        <div class="note">
+            <a href="notes.html">View all notes</a>
+        </div>
+    </div>
+
+    <!-- Mind Chat Bot -->
+    <div class="section chatbot">
+        <h2>Mind Chat Bot</h2>
+        <div class="chat-box">🤖 Chat Interface</div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
