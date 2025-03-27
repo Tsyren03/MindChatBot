@@ -1,0 +1,182 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.section {
+    width: 80%;
+    max-width: 800px;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+/* 감정 캘린더 */
+.calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-controls .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-controls .btn:hover {
+    background-color: #0056b3;
+}
+
+.calendar-controls .btn div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.calendar-day {
+    width: 40px;
+    height: 40px;
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-day:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.emotion-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.emotion-buttons .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.emotion-buttons .btn div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.emotion-buttons .btn-bad { background-color: #dc3545; color: #fff; }
+.emotion-buttons .btn-poor { background-color: #ffc107; color: #fff; }
+.emotion-buttons .btn-neutral { background-color: #6c757d; color: #fff; }
+.emotion-buttons .btn-good { background-color: #28a745; color: #fff; }
+.emotion-buttons .btn-best { background-color: #007bff; color: #fff; }
+
+.emotion-buttons .btn:hover {
+    opacity: 0.8;
+}
+
+.note {
+    padding: 20px;
+    margin: 10px 0;
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.note:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.note a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.chat-box {
+    width: 100%;
+    height: 400px;
+    background-color: #e9ecef;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.notes-on-date {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 800px;
+    text-align: left;
+}
+
+.notes-on-date .note {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    border-radius: 5px;
+}
+

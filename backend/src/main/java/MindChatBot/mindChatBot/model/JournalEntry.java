@@ -17,4 +17,17 @@ public class JournalEntry {
     private String content;
     private LocalDateTime timestamp;
     private LocalDate date; // Add date field
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
 }
+

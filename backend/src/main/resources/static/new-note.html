@@ -4,20 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Note</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="notes-styles.css">
 </head>
 <body>
-<h1>Create a New Note</h1>
-<form id="new-note-form">
-    <label for="note-content">Note Content:</label>
-    <textarea id="note-content" name="content" required></textarea>
+<div class="container">
+    <div class="section">
+        <h1>Create a New Note</h1>
+        <form id="new-note-form">
+            <label for="note-content">Note Content:</label>
+            <textarea id="note-content" name="content" required></textarea>
 
-    <label for="note-date">Date:</label>
-    <input type="date" id="note-date" name="date" required>
+            <label for="note-date">Date:</label>
+            <input type="date" id="note-date" name="date" required>
 
-    <button type="submit">Save Note</button>
-</form>
-
+            <button type="submit" class="btn">Save Note</button>
+        </form>
+    </div>
+</div>
 <script src="note-script.js"></script>
 </body>
 </html>

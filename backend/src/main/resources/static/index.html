@@ -3,23 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mental Health Support</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Mind Chat Bot and Journal</title>
+    <link rel="stylesheet" href="index-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
 <div class="container">
     <!-- Mood Tracker -->
     <div class="section mood-tracker">
         <h2>Mood Tracker</h2>
+        <div class="calendar-controls">
+            <button id="prev-month" class="btn"><i class="fas fa-chevron-left"></i> Previous</button>
+            <span id="current-month-year"></span>
+            <button id="next-month" class="btn">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
         <div class="calendar" id="calendar"></div>
         <div class="emotion-buttons">
-            <button onclick="setMood('😞')">😞 Bad</button>
-            <button onclick="setMood('😕')">😕 Poor</button>
-            <button onclick="setMood('😐')">😐 Neutral</button>
-            <button onclick="setMood('🙂')">🙂 Good</button>
-            <button onclick="setMood('😃')">😃 Best</button>
+            <button class="btn btn-bad" onclick="setMood('😞')"><i class="fas fa-frown"></i> Bad</button>
+            <button class="btn btn-poor" onclick="setMood('😕')"><i class="fas fa-meh"></i> Poor</button>
+            <button class="btn btn-neutral" onclick="setMood('😐')"><i class="fas fa-meh-blank"></i> Neutral</button>
+            <button class="btn btn-good" onclick="setMood('🙂')"><i class="fas fa-smile"></i> Good</button>
+            <button class="btn btn-best" onclick="setMood('😃')"><i class="fas fa-laugh"></i> Best</button>
         </div>
         <div class="current-date" id="current-date"></div>
+        <div class="notes-on-date" id="notes-on-date"></div>
     </div>
 
     <!-- Journaling -->
