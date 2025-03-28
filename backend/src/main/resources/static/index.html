@@ -11,18 +11,24 @@
     <!-- Mood Tracker -->
     <div class="section mood-tracker">
         <h2>Mood Tracker</h2>
+        <div class="today-date" id="current-date"></div> <!-- Today date moved here -->
+        <div class="calendar-controls">
+            <button id="prev-month" class="stylish-btn">◀</button> <!-- Stylish button -->
+            <div id="current-month"></div>
+            <button id="next-month" class="stylish-btn">▶</button> <!-- Stylish button -->
+        </div>
         <div class="calendar" id="calendar"></div>
         <div class="emotion-buttons">
-            <button onclick="setMood('😞')">😞 Bad</button>
-            <button onclick="setMood('😕')">😕 Poor</button>
-            <button onclick="setMood('😐')">😐 Neutral</button>
-            <button onclick="setMood('🙂')">🙂 Good</button>
-            <button onclick="setMood('😃')">😃 Best</button>
+            <button class="mood-btn bad" onclick="setMood('bad')">😞 Bad</button>
+            <button class="mood-btn poor" onclick="setMood('poor')">😕 Poor</button>
+            <button class="mood-btn neutral" onclick="setMood('neutral')">😐 Neutral</button>
+            <button class="mood-btn good" onclick="setMood('good')">🙂 Good</button>
+            <button class="mood-btn best" onclick="setMood('best')">😃 Best</button>
         </div>
-        <div class="current-date" id="current-date"></div>
+        <div class="note">
+            <a href="statistics.html" class="stats-link">📊 View Mood Statistics</a>
+        </div>
     </div>
-
-    <!-- Journaling -->
     <div class="section journaling">
         <h2>Journaling</h2>
         <div class="note">
@@ -32,7 +38,6 @@
             <a href="notes.html">View all notes</a>
         </div>
     </div>
-
     <!-- Mind Chat Bot -->
     <div class="section chatbot">
         <h2>Mind Chat Bot</h2>
