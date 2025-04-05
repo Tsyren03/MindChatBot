@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function updateCalendar() {
         calendar.innerHTML = "";
-        currentMonthElement.textContent = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
+            currentMonthElement.textContent = new Date(currentYear, currentMonth)
+                .toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const savedMoods = await fetchMoods(currentYear, currentMonth);
@@ -23,33 +24,18 @@ document.addEventListener("DOMContentLoaded", function () {
         for (let day = 1; day <= daysInMonth; day++) {
             const dayElement = document.createElement("div");
             dayElement.classList.add("calendar-day");
-
-            // Find the mood for the current day and change the color
-            const mood = savedMoods.find(m => m.day === day);
             dayElement.textContent = day;
             dayElement.dataset.day = day;
 
-            // Apply color based on the mood value using the updated color scheme
+            // Apply color based on mood
+            const mood = savedMoods.find(m => m.day === day);
             if (mood) {
                 switch (mood.emoji) {
-                    case 'bad':
-                        dayElement.style.backgroundColor = '#ff4d4d'; // 빨강
-                        break;
-                    case 'poor':
-                        dayElement.style.backgroundColor = '#ffa500'; // 주황
-                        break;
-                    case 'neutral':
-                        dayElement.style.backgroundColor = '#d3d3d3'; // 회색
-                        break;
-                    case 'good':
-                        dayElement.style.backgroundColor = '#90ee90'; // 연두색
-                        break;
-                    case 'best':
-                        dayElement.style.backgroundColor = '#32cd32'; // 초록
-                        break;
-                    default:
-                        dayElement.style.backgroundColor = 'transparent';
-                        break;
+                    case 'bad': dayElement.style.backgroundColor = '#ff4d4d'; break;
+                    case 'poor': dayElement.style.backgroundColor = '#ffa500'; break;
+                    case 'neutral': dayElement.style.backgroundColor = '#d3d3d3'; break;
+                    case 'good': dayElement.style.backgroundColor = '#90ee90'; break;
+                    case 'best': dayElement.style.backgroundColor = '#32cd32'; break;
                 }
             }
 
@@ -58,29 +44,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Event listeners for navigating between months
     prevMonthButton.addEventListener("click", () => {
         currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         updateCalendar();
     });
 
     nextMonthButton.addEventListener("click", () => {
         currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         updateCalendar();
     });
 
-    const today = new Date();
-    currentDateElement.textContent = `Today: ${today.toDateString()}`;
-
-    updateCalendar();  // Initial call to load the calendar
+    currentDateElement.textContent = `Today: ${new Date().toDateString()}`;
+    updateCalendar();
 });
 
 // Function to select a day
@@ -96,7 +73,7 @@ function selectDay(dayElement) {
     }
 }
 
-// Function to set mood for the selected day
+// Function to set mood
 async function setMood(moodValue) {
     const selectedDayElement = document.querySelector(".calendar-day.selected");
     if (!selectedDayElement) {
@@ -112,33 +89,66 @@ async function setMood(moodValue) {
         year: currentYear,
         month: currentMonth + 1,
         day: parseInt(day),
-        emoji: moodValue  // Use mood values like 'bad', 'poor', etc.
+        emoji: moodValue
     };
 
     await fetch('/api/moods', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mood)
     });
 
-    // Update the cell's background color based on the selected mood
+    // Update color based on selected mood
     switch (moodValue) {
-        case 'bad':
-            selectedDayElement.style.backgroundColor = '#ff4d4d'; // 빨강
-            break;
-        case 'poor':
-            selectedDayElement.style.backgroundColor = '#ffa500'; // 주황
-            break;
-        case 'neutral':
-            selectedDayElement.style.backgroundColor = '#d3d3d3'; // 회색
-            break;
-        case 'good':
-            selectedDayElement.style.backgroundColor = '#90ee90'; // 연두색
-            break;
-        case 'best':
-            selectedDayElement.style.backgroundColor = '#32cd32'; // 초록
-            break;
+        case 'bad': selectedDayElement.style.backgroundColor = '#ff4d4d'; break;
+        case 'poor': selectedDayElement.style.backgroundColor = '#ffa500'; break;
+        case 'neutral': selectedDayElement.style.backgroundColor = '#d3d3d3'; break;
+        case 'good': selectedDayElement.style.backgroundColor = '#90ee90'; break;
+        case 'best': selectedDayElement.style.backgroundColor = '#32cd32'; break;
     }
+}
+async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+
+    if (message === "") return;
+
+    addMessage("user", message);
+    input.value = "";
+
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                message: message,
+                userId: "testUser123"
+            }),
+        });
+
+        const data = await response.json();
+        console.log("API Response:", data); // 디버깅용 출력
+
+        if (data.response) {
+            addMessage("bot", data.response);
+        } else if (data.error) {
+            addMessage("bot", "⚠️ Error: " + data.error);
+        } else {
+            addMessage("bot", "⚠️ Unknown response from server.");
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+        addMessage("bot", "⚠️ Server error occurred.");
+    }
+}
+
+function addMessage(sender, text) {
+    const messagesDiv = document.getElementById("messages");
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message", sender);
+    messageElement.textContent = `${sender === "user" ? "You" : "Bot"}: ${text}`;
+    messagesDiv.appendChild(messageElement);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }

@@ -11,11 +11,11 @@
     <!-- Mood Tracker -->
     <div class="section mood-tracker">
         <h2>Mood Tracker</h2>
-        <div class="today-date" id="current-date"></div> <!-- Today date moved here -->
+        <div class="today-date" id="current-date"></div>
         <div class="calendar-controls">
-            <button id="prev-month" class="stylish-btn">◀</button> <!-- Stylish button -->
-            <div id="current-month"></div>
-            <button id="next-month" class="stylish-btn">▶</button> <!-- Stylish button -->
+            <button class="stylish-btn" id="prev-month">◀</button>
+            <span id="current-month">March 2025</span>
+            <button class="stylish-btn" id="next-month">▶</button>
         </div>
         <div class="calendar" id="calendar"></div>
         <div class="emotion-buttons">
@@ -29,19 +29,31 @@
             <a href="statistics.html" class="stats-link">📊 View Mood Statistics</a>
         </div>
     </div>
+
+    <!-- Journaling -->
     <div class="section journaling">
         <h2>Journaling</h2>
-        <div class="note">
-            <a href="new-note.html">Start a new note</a>
-        </div>
+        <form id="new-note-form">
+            <label for="note-content">Note Content:</label>
+            <textarea id="note-content" name="content" required></textarea>
+
+            <label for="note-date">Date:</label>
+            <input type="date" id="note-date" name="date" required>
+
+            <button type="submit">Save Note</button>
+        </form>
         <div class="note">
             <a href="notes.html">View all notes</a>
         </div>
     </div>
+
     <!-- Mind Chat Bot -->
-    <div class="section chatbot">
-        <h2>Mind Chat Bot</h2>
-        <div class="chat-box">🤖 Chat Interface</div>
+    <div class="chat-box" id="chat-box">
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
 </div>
 

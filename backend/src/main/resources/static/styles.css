@@ -156,13 +156,28 @@ body {
     color: #555;
 }
 
-/* 스타일리시 버튼 */
+/* 캘린더 컨트롤 버튼 스타일 */
+.calendar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 가운데 정렬 */
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+#current-month {
+    font-size: 18px;
+    font-weight: bold;
+    min-width: 120px; /* 고정된 너비를 설정하여 일관된 배치 유지 */
+    text-align: center;
+}
+
 .stylish-btn {
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 20px;
+    padding: 10px 15px;
     cursor: pointer;
     font-size: 18px;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -171,4 +186,120 @@ body {
 .stylish-btn:hover {
     background-color: #0056b3;
     transform: scale(1.1);
+}
+/* Journaling Section */
+.journaling {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    transition: transform 0.2s ease-in-out;
+}
+
+.journaling:hover {
+    transform: scale(1.02);
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #444;
+}
+
+textarea, input[type="date"] {
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+    background-color: #fafafa;
+    transition: border-color 0.3s ease;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+textarea:focus, input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Submit Button */
+button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* View all notes link */
+.note {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.note a {
+    color: #007bff;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.note a:hover {
+    color: #0056b3;
+}
+
+.chat-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+.input-area {
+    display: flex;
+}
+.input-area input {
+    flex-grow: 1;
+    padding: 5px;
+}
+.input-area button {
+    padding: 5px 10px;
 }
