@@ -1,7 +1,10 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 model/actions/__pycache__/__init__.cpython-38.pyc
 model/actions/__pycache__/actions.cpython-38.pyc
 =======
+=======
+>>>>>>> Stashed changes
 echo "models/" >> .gitignore
 # Rasa / Python
 __pycache__/
@@ -38,4 +41,7 @@ Thumbs.db
 # 캐시 / 테스트
 .cache/
 coverage/
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
