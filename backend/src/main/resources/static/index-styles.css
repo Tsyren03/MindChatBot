@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
@@ -33,43 +34,35 @@ h2 {
     color: #007bff;
 }
 
-/* 감정 캘린더 */
-.calendar-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Calendar Weekdays */
+.mood-tracker .calendar-weekdays {
+    text-align: center;
+    font-weight: bold;
     margin-bottom: 10px;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    border-radius: 8px;
 }
 
-.calendar-controls .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px 10px;
-    border: none;
+.mood-tracker .calendar-weekdays span {
+    display: inline-block;
+    padding: 10px;
+    background-color: #f1f1f1;
     border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 16px;
+    margin-right: 15px; /* Increased space between the days */
 }
 
-.calendar-controls .btn:hover {
-    background-color: #0056b3;
+/* Highlight Sunday in red */
+.mood-tracker .calendar-weekdays span.sunday {
+    color: red;
 }
 
-.calendar-controls .btn div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
+/* Calendar Layout */
 #calendar {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
+    gap: 10px; /* Adjust the gap between the days */
     margin-bottom: 20px;
 }
 
@@ -86,11 +79,12 @@ h2 {
     transition: background-color 0.3s;
 }
 
-.calendar-day:hover {
-    background-color: #007bff;
-    color: #fff;
+.mood-tracker .calendar-day:hover {
+    background-color: #007bff !important;
+    color: #fff !important;
 }
 
+/* Mood Buttons */
 .emotion-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -99,36 +93,25 @@ h2 {
     margin-top: 10px;
 }
 
-.emotion-buttons .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 5px;
+.mood-btn {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s;
 }
 
-.emotion-buttons .btn div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
+.mood-btn:hover {
+    opacity: 0.8 !important;
 }
 
-.emotion-buttons .btn-bad { background-color: #dc3545; color: #fff; }
-.emotion-buttons .btn-poor { background-color: #ffc107; color: #fff; }
-.emotion-buttons .btn-neutral { background-color: #6c757d; color: #fff; }
-.emotion-buttons .btn-good { background-color: #28a745; color: #fff; }
-.emotion-buttons .btn-best { background-color: #007bff; color: #fff; }
+.mood-btn.bad { background-color: #dc3545; color: #fff; }
+.mood-btn.poor { background-color: #ffc107; color: #fff; }
+.mood-btn.neutral { background-color: #6c757d; color: #fff; }
+.mood-btn.good { background-color: #28a745; color: #fff; }
+.mood-btn.best { background-color: #007bff; color: #fff; }
 
-.emotion-buttons .btn:hover {
-    opacity: 0.8;
-}
-
+/* Notes and Chat */
 .note {
     padding: 20px;
     margin: 10px 0;
@@ -137,6 +120,7 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-align: center;
 }
 
 .note:hover {
@@ -161,22 +145,25 @@ h2 {
     font-size: 18px;
 }
 
-.notes-on-date {
-    margin-top: 20px;
+/* Journaling */
+textarea, input[type="date"] {
+    width: 100%;
     padding: 10px;
-    border: 1px solid #dee2e6;
-    background-color: #e9ecef;
-    border-radius: 5px;
-    width: 80%;
-    max-width: 800px;
-    text-align: left;
-}
-
-.notes-on-date .note {
     margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #dee2e6;
-    background-color: #fff;
+    border: 1px solid #ccc;
     border-radius: 5px;
 }
 
+/* Add specificity to submit button hover styles */
+button[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3 !important;
+}

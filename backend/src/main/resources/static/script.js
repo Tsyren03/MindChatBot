@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const nextMonthButton = document.getElementById("next-month");
     const currentMonthElement = document.getElementById("current-month");
 
+
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
 
@@ -15,12 +16,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function updateCalendar() {
         calendar.innerHTML = "";
-            currentMonthElement.textContent = new Date(currentYear, currentMonth)
-                .toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
+        currentMonthElement.textContent = new Date(currentYear, currentMonth)
+            .toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+        const startDay = (firstDayOfMonth.getDay() + 6) % 7; // Convert Sunday-start to Monday-start
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const savedMoods = await fetchMoods(currentYear, currentMonth);
 
+        // 🔸 Add empty cells for days before the 1st of the month
+        for (let i = 0; i < startDay; i++) {
+            const emptyCell = document.createElement("div");
+            emptyCell.classList.add("calendar-day", "empty");
+            calendar.appendChild(emptyCell);
+        }
+
+        // 🔸 Add actual day elements
         for (let day = 1; day <= daysInMonth; day++) {
             const dayElement = document.createElement("div");
             dayElement.classList.add("calendar-day");

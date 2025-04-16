@@ -7,55 +7,67 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="container">
-    <!-- Mood Tracker -->
-    <div class="section mood-tracker">
+<main class="container">
+    <!-- Mood Tracker Section -->
+    <section class="section mood-tracker">
         <h2>Mood Tracker</h2>
         <div class="today-date" id="current-date"></div>
         <div class="calendar-controls">
-            <button class="stylish-btn" id="prev-month">◀</button>
+            <button class="stylish-btn" id="prev-month" aria-label="Previous Month">◀</button>
             <span id="current-month">March 2025</span>
-            <button class="stylish-btn" id="next-month">▶</button>
+            <button class="stylish-btn" id="next-month" aria-label="Next Month">▶</button>
         </div>
-        <div class="calendar" id="calendar"></div>
+        <div class="calendar">
+            <div class="calendar-weekdays">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span class="sunday">Sun</span>
+            </div>
+            <div id="calendar"></div>
+        </div>
         <div class="emotion-buttons">
-            <button class="mood-btn bad" onclick="setMood('bad')">😞 Bad</button>
-            <button class="mood-btn poor" onclick="setMood('poor')">😕 Poor</button>
-            <button class="mood-btn neutral" onclick="setMood('neutral')">😐 Neutral</button>
-            <button class="mood-btn good" onclick="setMood('good')">🙂 Good</button>
-            <button class="mood-btn best" onclick="setMood('best')">😃 Best</button>
+            <button class="mood-btn bad" onclick="setMood('bad')" aria-label="Bad Mood">😞 Bad</button>
+            <button class="mood-btn poor" onclick="setMood('poor')" aria-label="Poor Mood">😕 Poor</button>
+            <button class="mood-btn neutral" onclick="setMood('neutral')" aria-label="Neutral Mood">😐 Neutral</button>
+            <button class="mood-btn good" onclick="setMood('good')" aria-label="Good Mood">🙂 Good</button>
+            <button class="mood-btn best" onclick="setMood('best')" aria-label="Best Mood">😃 Best</button>
         </div>
         <div class="note">
             <a href="statistics.html" class="stats-link">📊 View Mood Statistics</a>
         </div>
-    </div>
+    </section>
 
-    <!-- Journaling -->
-    <div class="section journaling">
+    <!-- Journaling Section -->
+    <section class="section journaling">
         <h2>Journaling</h2>
         <form id="new-note-form">
             <label for="note-content">Note Content:</label>
-            <textarea id="note-content" name="content" required></textarea>
-
+            <textarea id="note-content" name="content" required placeholder="Write your note here..."></textarea>
             <label for="note-date">Date:</label>
             <input type="date" id="note-date" name="date" required>
-
             <button type="submit">Save Note</button>
         </form>
         <div class="note">
             <a href="notes.html">View all notes</a>
         </div>
-    </div>
+    </section>
 
-    <!-- Mind Chat Bot -->
-    <div class="chat-box" id="chat-box">
-        <div class="messages" id="messages"></div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Type your message..." />
-            <button onclick="sendMessage()">Send</button>
+    <!-- Chat Box Section -->
+    <section class="section chat-section">
+        <h2>Mind Chat Bot</h2>
+        <div class="chat-box" id="chat-box">
+            <div class="messages" id="messages"></div>
+            <div class="input-area" style="display: flex; gap: 10px; width: 100%; margin-top: 10px;">
+                <input type="text" id="user-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                <button onclick="sendMessage()" style="padding: 10px 20px; border: none; border-radius: 5px; background-color: #007bff; color: #fff;">Send</button>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 <script src="script.js"></script>
 </body>
