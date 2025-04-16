@@ -3,47 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mind Chat Bot and Journal</title>
-    <link rel="stylesheet" href="index-styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Mental Health Support</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container">
     <!-- Mood Tracker -->
     <div class="section mood-tracker">
         <h2>Mood Tracker</h2>
+        <div class="today-date" id="current-date"></div>
         <div class="calendar-controls">
-            <button id="prev-month" class="btn"><i class="fas fa-chevron-left"></i> Previous</button>
-            <span id="current-month-year"></span>
-            <button id="next-month" class="btn">Next <i class="fas fa-chevron-right"></i></button>
+            <button class="stylish-btn" id="prev-month">◀</button>
+            <span id="current-month">March 2025</span>
+            <button class="stylish-btn" id="next-month">▶</button>
         </div>
         <div class="calendar" id="calendar"></div>
         <div class="emotion-buttons">
-            <button class="btn btn-bad" onclick="setMood('😞')"><i class="fas fa-frown"></i> Bad</button>
-            <button class="btn btn-poor" onclick="setMood('😕')"><i class="fas fa-meh"></i> Poor</button>
-            <button class="btn btn-neutral" onclick="setMood('😐')"><i class="fas fa-meh-blank"></i> Neutral</button>
-            <button class="btn btn-good" onclick="setMood('🙂')"><i class="fas fa-smile"></i> Good</button>
-            <button class="btn btn-best" onclick="setMood('😃')"><i class="fas fa-laugh"></i> Best</button>
+            <button class="mood-btn bad" onclick="setMood('bad')">😞 Bad</button>
+            <button class="mood-btn poor" onclick="setMood('poor')">😕 Poor</button>
+            <button class="mood-btn neutral" onclick="setMood('neutral')">😐 Neutral</button>
+            <button class="mood-btn good" onclick="setMood('good')">🙂 Good</button>
+            <button class="mood-btn best" onclick="setMood('best')">😃 Best</button>
         </div>
-        <div class="current-date" id="current-date"></div>
-        <div class="notes-on-date" id="notes-on-date"></div>
+        <div class="note">
+            <a href="statistics.html" class="stats-link">📊 View Mood Statistics</a>
+        </div>
     </div>
 
     <!-- Journaling -->
     <div class="section journaling">
         <h2>Journaling</h2>
-        <div class="note">
-            <a href="new-note.html">Start a new note</a>
-        </div>
+        <form id="new-note-form">
+            <label for="note-content">Note Content:</label>
+            <textarea id="note-content" name="content" required></textarea>
+
+            <label for="note-date">Date:</label>
+            <input type="date" id="note-date" name="date" required>
+
+            <button type="submit">Save Note</button>
+        </form>
         <div class="note">
             <a href="notes.html">View all notes</a>
         </div>
     </div>
 
     <!-- Mind Chat Bot -->
-    <div class="section chatbot">
-        <h2>Mind Chat Bot</h2>
-        <div class="chat-box">🤖 Chat Interface</div>
+    <div class="chat-box" id="chat-box">
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
 </div>
 

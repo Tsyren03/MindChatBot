@@ -1,192 +1,154 @@
 document.addEventListener("DOMContentLoaded", function () {
     const calendar = document.getElementById("calendar");
-    const currentDateDiv = document.getElementById("current-date");
-    const notesOnDateDiv = document.getElementById("notes-on-date");
-    const currentMonthYear = document.getElementById("current-month-year");
-    const prevMonthBtn = document.getElementById("prev-month");
-    const nextMonthBtn = document.getElementById("next-month");
-    const moodButtons = document.querySelectorAll(".mood-button");
-    const deleteButton = document.getElementById("delete-log-btn");  // Assume there's a delete button for the selected log
-    const moodEmojiDiv = document.getElementById("mood-emoji");  // Assume there's an element to show the mood emoji
+    const currentDateElement = document.getElementById("current-date");
+    const prevMonthButton = document.getElementById("prev-month");
+    const nextMonthButton = document.getElementById("next-month");
+    const currentMonthElement = document.getElementById("current-month");
 
-    let currentDate = new Date();
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
 
-    function renderCalendar(date) {
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        currentMonthYear.textContent = `${date.toLocaleString('default', { month: 'long' })} ${year}`;
+    async function fetchMoods(year, month) {
+        const response = await fetch(`/api/moods/${year}/${month + 1}`);
+        return response.json();
+    }
 
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-
+    async function updateCalendar() {
         calendar.innerHTML = "";
+            currentMonthElement.textContent = new Date(currentYear, currentMonth)
+                .toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            const emptyCell = document.createElement("div");
-            emptyCell.classList.add("calendar-day");
-            calendar.appendChild(emptyCell);
-        }
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const savedMoods = await fetchMoods(currentYear, currentMonth);
 
-        for (let i = 1; i <= lastDateOfMonth; i++) {
-            const dayCell = document.createElement("div");
-            dayCell.classList.add("calendar-day");
-            dayCell.textContent = i;
-            dayCell.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-            calendar.appendChild(dayCell);
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayElement = document.createElement("div");
+            dayElement.classList.add("calendar-day");
+            dayElement.textContent = day;
+            dayElement.dataset.day = day;
 
-            // Fetch mood for the date and set color
-            fetchMoodForDate(dayCell.dataset.date, dayCell);
-        }
-    }
-    function fetchMoodForDate(date, dayCell) {
-        fetch(`/api/emotion-logs/date?date=${date}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    const log = data[0];  // Assuming only one log per date
-                    switch (log.emotionScore) {
-                        case 1:
-                            dayCell.style.backgroundColor = "yellow";  // happy
-                            break;
-                        case -1:
-                            dayCell.style.backgroundColor = "blue";  // sad
-                            break;
-                        case 2:
-                            dayCell.style.backgroundColor = "red";  // angry
-                            break;
-                        case 0:
-                            dayCell.style.backgroundColor = "gray";  // neutral
-                            break;
-                        default:
-                            dayCell.style.backgroundColor = "white";
-                    }
+            // Apply color based on mood
+            const mood = savedMoods.find(m => m.day === day);
+            if (mood) {
+                switch (mood.emoji) {
+                    case 'bad': dayElement.style.backgroundColor = '#ff4d4d'; break;
+                    case 'poor': dayElement.style.backgroundColor = '#ffa500'; break;
+                    case 'neutral': dayElement.style.backgroundColor = '#d3d3d3'; break;
+                    case 'good': dayElement.style.backgroundColor = '#90ee90'; break;
+                    case 'best': dayElement.style.backgroundColor = '#32cd32'; break;
                 }
-            })
-            .catch(error => {
-                console.error("Error fetching mood:", error);
-            });
-    }
-
-    prevMonthBtn.addEventListener("click", function () {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar(currentDate);
-    });
-
-    nextMonthBtn.addEventListener("click", function () {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar(currentDate);
-    });
-
-    if (calendar) {
-        calendar.addEventListener("click", function (event) {
-            if (event.target.classList.contains("calendar-day") && event.target.dataset.date) {
-                const selectedDate = event.target.dataset.date;
-                currentDateDiv.textContent = `Selected Date: ${selectedDate}`;
-                fetchNotesForDate(selectedDate);
-                deleteButton.style.display = "inline";  // Show the delete button when a log is selected
             }
-        });
-    }
 
-    function fetchNotesForDate(date) {
-        fetch(`/api/notes?date=${date}`)
-            .then(response => response.json())
-            .then(data => {
-                notesOnDateDiv.innerHTML = "";
-                if (data.length > 0) {
-                    data.forEach(note => {
-                        const noteDiv = document.createElement("div");
-                        noteDiv.classList.add("note");
-                        noteDiv.textContent = note.content;
-                        notesOnDateDiv.appendChild(noteDiv);
-                    });
-                } else {
-                    notesOnDateDiv.textContent = "No notes for this date.";
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching notes:", error);
-            });
-    }
-    function createEmotionLog(moodScore) {
-        const selectedDate = currentDateDiv.textContent.split(": ")[1];
-        if (selectedDate) {
-            const newLog = {
-                userId: "user123",  // You can replace this with the actual user ID
-                date: selectedDate,
-                emotionScore: moodScore,
-                aiInsights: "Generated insights based on mood."  // Placeholder for AI insights
-            };
-
-            fetch("/api/emotion-logs", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(newLog)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert("Mood log saved successfully!");
-                displayMoodEmoji(moodScore);
-                fetchMoodForDate(selectedDate, document.querySelector(`[data-date='${selectedDate}']`));
-            })
-            .catch(error => {
-                console.error("Error saving log:", error);
-            });
-        } else {
-            alert("Please select a date first.");
+            dayElement.addEventListener("click", () => selectDay(dayElement));
+            calendar.appendChild(dayElement);
         }
     }
 
-    function displayMoodEmoji(moodScore) {
-        let emoji;
-        switch (moodScore) {
-            case 1:
-                emoji = "😊";  // happy
-                break;
-            case -1:
-                emoji = "😢";  // sad
-                break;
-            case 2:
-                emoji = "😠";  // angry
-                break;
-            case 0:
-                emoji = "😐";  // neutral
-                break;
-            default:
-                emoji = "😐";  // default neutral
-        }
-        moodEmojiDiv.textContent = `Mood: ${emoji}`;
-    }
-
-    // Mood buttons for saving a mood log
-    moodButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            const mood = this.dataset.mood;
-            const moodScore = parseInt(mood);
-            createEmotionLog(moodScore);
-        });
+    prevMonthButton.addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        updateCalendar();
     });
 
-    // Delete log button for selected date
-    deleteButton.addEventListener("click", function () {
-        const selectedDate = currentDateDiv.textContent.split(": ")[1];
-        if (selectedDate) {
-            fetch(`/api/emotion-logs/date?date=${selectedDate}`, {
-                method: "DELETE"
-            })
-            .then(() => {
-                alert("Log deleted successfully!");
-                fetchMoodForDate(selectedDate, document.querySelector(`[data-date='${selectedDate}']`));
-                notesOnDateDiv.textContent = "No logs for this date.";  // Clear the notes area
-                deleteButton.style.display = "none";  // Hide delete button after deleting the log
-            })
-            .catch(error => {
-                console.error("Error deleting log:", error);
-            });
-        }
+    nextMonthButton.addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        updateCalendar();
     });
 
-    renderCalendar(currentDate);
+    currentDateElement.textContent = `Today: ${new Date().toDateString()}`;
+    updateCalendar();
 });
+
+// Function to select a day
+function selectDay(dayElement) {
+    document.querySelectorAll(".calendar-day").forEach(el => el.classList.remove("selected"));
+    dayElement.classList.add("selected");
+
+    const noteDateInput = document.getElementById("note-date");
+    if (noteDateInput) {
+        const selectedDate = new Date();
+        selectedDate.setDate(dayElement.dataset.day);
+        noteDateInput.value = selectedDate.toISOString().split('T')[0];
+    }
+}
+
+// Function to set mood
+async function setMood(moodValue) {
+    const selectedDayElement = document.querySelector(".calendar-day.selected");
+    if (!selectedDayElement) {
+        alert("Please select a date first!");
+        return;
+    }
+
+    const day = selectedDayElement.dataset.day;
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+
+    const mood = {
+        year: currentYear,
+        month: currentMonth + 1,
+        day: parseInt(day),
+        emoji: moodValue
+    };
+
+    await fetch('/api/moods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mood)
+    });
+
+    // Update color based on selected mood
+    switch (moodValue) {
+        case 'bad': selectedDayElement.style.backgroundColor = '#ff4d4d'; break;
+        case 'poor': selectedDayElement.style.backgroundColor = '#ffa500'; break;
+        case 'neutral': selectedDayElement.style.backgroundColor = '#d3d3d3'; break;
+        case 'good': selectedDayElement.style.backgroundColor = '#90ee90'; break;
+        case 'best': selectedDayElement.style.backgroundColor = '#32cd32'; break;
+    }
+}
+async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+
+    if (message === "") return;
+
+    addMessage("user", message);
+    input.value = "";
+
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                message: message,
+                userId: "testUser123"
+            }),
+        });
+
+        const data = await response.json();
+        console.log("API Response:", data); // 디버깅용 출력
+
+        if (data.response) {
+            addMessage("bot", data.response);
+        } else if (data.error) {
+            addMessage("bot", "⚠️ Error: " + data.error);
+        } else {
+            addMessage("bot", "⚠️ Unknown response from server.");
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+        addMessage("bot", "⚠️ Server error occurred.");
+    }
+}
+
+function addMessage(sender, text) {
+    const messagesDiv = document.getElementById("messages");
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message", sender);
+    messageElement.textContent = `${sender === "user" ? "You" : "Bot"}: ${text}`;
+    messagesDiv.appendChild(messageElement);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}

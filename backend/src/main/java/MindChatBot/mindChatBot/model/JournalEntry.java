@@ -16,7 +16,7 @@ public class JournalEntry {
     private String userId;
     private String content;
     private LocalDateTime timestamp;
-    private LocalDate date; // Add date field
+    private LocalDate date;
 
     public LocalDate getDate() {
         return date;
@@ -29,5 +29,8 @@ public class JournalEntry {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
-}
 
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+}
