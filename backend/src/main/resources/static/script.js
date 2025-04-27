@@ -150,47 +150,52 @@ async function setMood(moodValue) {
         case 'good': selectedDayElement.style.backgroundColor = '#90ee90'; break;
         case 'best': selectedDayElement.style.backgroundColor = '#32cd32'; break;
     }
-}
+}async function sendMessage() {
+     const input = document.getElementById("user-input");
+     const message = input.value.trim();
 
-async function sendMessage() {
-    const input = document.getElementById("user-input");
-    const message = input.value.trim();
+     if (message === "") return;
 
-    if (message === "") return;
+     addMessage("user", message);
+     input.value = "";
 
-    addMessage("user", message);
-    input.value = "";
+     const token = localStorage.getItem("authToken");
+     let userId = "anonymous";
 
-    const token = localStorage.getItem("authToken");
-    let userId = "anonymous";
+     if (token) {
+         try {
+             const decodedToken = JSON.parse(atob(token.split('.')[1]));
+             userId = decodedToken.userId;
+         } catch (error) {
+             console.error("Error decoding token:", error);
+             localStorage.removeItem("authToken");
+             userId = "anonymous";
+         }
+     }
 
-    if (token) {
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
-        userId = decodedToken.userId;
-    }
+     try {
+         const response = await fetch("/api/chat", {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ message: message, userId: userId })
+         });
 
-    try {
-        const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: message, userId: userId }),
-        });
+         const data = await response.json();
+         console.log("API Response:", data);
 
-        const data = await response.json();
-        console.log("API Response:", data);
+         if (data.response) {
+             addMessage("bot", data.response);
+         } else if (data.error) {
+             addMessage("bot", "⚠️ Error: " + data.error);
+         } else {
+             addMessage("bot", "⚠️ Unknown response from server.");
+         }
+     } catch (error) {
+         console.error("Error sending message:", error);
+         addMessage("bot", "⚠️ Server error occurred.");
+     }
+ }
 
-        if (data.response) {
-            addMessage("bot", data.response);
-        } else if (data.error) {
-            addMessage("bot", "⚠️ Error: " + data.error);
-        } else {
-            addMessage("bot", "⚠️ Unknown response from server.");
-        }
-    } catch (error) {
-        console.error("Error sending message:", error);
-        addMessage("bot", "⚠️ Server error occurred.");
-    }
-}
 
 function addMessage(sender, text) {
     const messagesDiv = document.getElementById("messages");

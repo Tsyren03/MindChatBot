@@ -4,8 +4,9 @@ import MindChatBot.mindChatBot.service.OpenAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -19,13 +20,18 @@ public class ChatController {
     }
 
     @PostMapping
-    public ResponseEntity<String> sendMessageToChatBot(@RequestBody String userMessage) {
-        try {
-            // Send message to OpenAI service and get the response
-            String botResponse = openAiService.chatWithBot(userMessage);
-            return ResponseEntity.ok(botResponse);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("An error occurred while processing the request.");
+    public Mono<ResponseEntity<Map<String, String>>> chatWithBot(@RequestBody Map<String, String> requestBody) {
+        String message = requestBody.get("message");
+        String userId = requestBody.getOrDefault("userId", "anonymous");
+
+        if (message == null || message.trim().isEmpty()) {
+            return Mono.just(ResponseEntity.badRequest().body(Map.of("error", "Message is empty.")));
         }
+
+        return openAiService.sendMessageToOpenAI(message, userId)
+                .map(response -> ResponseEntity.ok(Map.of("response", response)))
+                .onErrorResume(error -> Mono.just(
+                        ResponseEntity.status(500).body(Map.of("error", "Error communicating with OpenAI.")))
+                );
     }
 }

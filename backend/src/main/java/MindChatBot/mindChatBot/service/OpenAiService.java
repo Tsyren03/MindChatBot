@@ -1,48 +1,51 @@
 package MindChatBot.mindChatBot.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class OpenAiService {
 
-    @Value("${openai.api.key}") // Make sure the property name is correct
-    private String apiKey;
+    private final WebClient webClient;
 
-    private final OkHttpClient client = new OkHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${openai.api.key}")
+    private String openaiApiKey;
 
-    public String chatWithBot(String userMessage) throws IOException {
-        // Use the cheaper gpt-3.5-turbo model instead of gpt-4
-        JsonNode requestBody = objectMapper.createObjectNode()
-                .put("model", "gpt-3.5-turbo")  // Use gpt-3.5-turbo for cheaper usage
-                .putArray("messages").add(objectMapper.createObjectNode()
-                        .put("role", "system")
-                        .put("content", "You are a helpful assistant."))
-                .add(objectMapper.createObjectNode()
-                        .put("role", "user")
-                        .put("content", userMessage));
+    public OpenAiService(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("https://api.openai.com/v1").build();
+    }
 
-        // Prepare the request to OpenAI API
-        RequestBody body = RequestBody.create(requestBody.toString(), MediaType.parse("application/json"));
-        Request request = new Request.Builder()
-                .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "Bearer " + apiKey)
-                .post(body)
-                .build();
+    public Mono<String> sendMessageToOpenAI(String message, String userId) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", "gpt-3.5-turbo");
+        requestBody.put("messages", new Object[] {
+                Map.of("role", "system", "content", "You are a helpful assistant."),
+                Map.of("role", "user", "content", message)
+        });
 
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                JsonNode responseBody = objectMapper.readTree(response.body().string());
-                return responseBody.path("choices").get(0).path("message").path("content").asText();
-            } else {
-                throw new IOException("Error from OpenAI: " + response.body().string());
-            }
-        }
+        return webClient.post()
+                .uri("/chat/completions")
+                .header("Authorization", "Bearer " + openaiApiKey)
+                .header("Content-Type", "application/json")
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .map(response -> {
+                    try {
+                        var choices = (java.util.List<Map<String, Object>>) response.get("choices");
+                        if (choices != null && !choices.isEmpty()) {
+                            var messageMap = (Map<String, Object>) choices.get(0).get("message");
+                            return (String) messageMap.get("content");
+                        }
+                        return "No response from OpenAI.";
+                    } catch (Exception e) {
+                        return "Error parsing OpenAI response.";
+                    }
+                });
     }
 }

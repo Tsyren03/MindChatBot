@@ -7,9 +7,12 @@
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
-<main class="container">
-    <h1>Welcome, <span th:text="${email}">User</span>!</h1>
+<h1>
+    <small style="font-size: 0.6em;">Welcome,</small><br>
+    <span style="font-size: 1.5em; font-weight: bold;" th:text="${email}">User</span>
+</h1>
 
+<main class="container">
     <!-- Mood Tracker Section -->
     <section class="section mood-tracker">
         <h2>Mood Tracker</h2>
