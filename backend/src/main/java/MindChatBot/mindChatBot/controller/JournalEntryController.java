@@ -1,33 +1,64 @@
 package MindChatBot.mindChatBot.controller;
 
 import MindChatBot.mindChatBot.model.JournalEntry;
-import MindChatBot.mindChatBot.repository.JournalEntryRepository;
+import MindChatBot.mindChatBot.service.JournalEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
 @RestController
-@RequestMapping("/api/notes")
+@RequestMapping("/user/notes")
 public class JournalEntryController {
 
-    @Autowired
-    private JournalEntryRepository journalEntryRepository;
+    private final JournalEntryService journalEntryService;
 
-    @GetMapping
-    public List<JournalEntry> getAllNotes(@RequestParam(required = false) String date) {
-        if (date != null) {
-            LocalDate localDate = LocalDate.parse(date); // parse the date string into LocalDate
-            return journalEntryRepository.findByDate(localDate); // use LocalDate directly
-        }
-        return journalEntryRepository.findAll(); // return all notes if no date is provided
+    @Autowired
+    public JournalEntryController(JournalEntryService journalEntryService) {
+        this.journalEntryService = journalEntryService;
     }
 
-    @PostMapping
-    public JournalEntry createNote(@RequestBody JournalEntry journalEntry) {
-        if (journalEntry.getDate() == null) {
-            journalEntry.setDate(journalEntry.getTimestamp().toLocalDate()); // Set date from timestamp if not set
+    // ✅ 1. Get all notes or filter by date
+    @GetMapping
+    public List<JournalEntry> getNotes(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        // Retrieve the currently authenticated user's ID
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (date != null) {
+            // Return notes for the specific date
+            return journalEntryService.getEntriesForUserByDate(userId, date);
+        } else {
+            // Return all notes for the user
+            return journalEntryService.getAllEntriesForUser(userId);
         }
-        return journalEntryRepository.save(journalEntry);
+    }
+
+    // ✅ 2. Create a new journal entry (note)
+    @PostMapping
+    public JournalEntry createNote(@RequestBody JournalEntry note) {
+        // Ensure the userId is properly set before saving
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Log the creation attempt
+        System.out.println("Creating note for user: " + userId); // Add logging for debugging
+
+        // Set the user ID for the note
+        note.setUserId(userId);
+
+        // Set the current timestamp for the note
+        note.setTimestamp(LocalDateTime.now());
+
+        // Log the note data to verify the content before saving
+        System.out.println("Saving note: " + note.toString());
+
+        // Save the note through the service layer
+        return journalEntryService.saveEntry(note);
     }
 }

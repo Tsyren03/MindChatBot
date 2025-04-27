@@ -35,16 +35,17 @@ h2 {
 
 .note {
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 15px;
     border: 1px solid #dee2e6;
     background-color: #e9ecef;
     border-radius: 5px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .note:hover {
     background-color: #007bff;
     color: #fff;
+    transform: translateY(-5px);
 }
 
 .note a {
@@ -56,10 +57,13 @@ form {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+    max-width: 500px;
 }
 
 label {
     margin: 10px 0 5px;
+    font-size: 1.1em;
 }
 
 textarea, input[type="date"] {
@@ -69,6 +73,12 @@ textarea, input[type="date"] {
     border: 1px solid #dee2e6;
     border-radius: 5px;
     box-sizing: border-box;
+    font-size: 1em;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
 }
 
 button.btn {
@@ -78,9 +88,31 @@ button.btn {
     background-color: #007bff;
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 button.btn:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+button.btn:focus {
+    outline: none;
+}
+
+#notes-list {
+    width: 100%;
+    margin-top: 20px;
+    text-align: left;
+}
+
+#notes-list .note {
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#notes-list .note:hover {
+    background-color: #007bff;
+    color: #fff;
 }

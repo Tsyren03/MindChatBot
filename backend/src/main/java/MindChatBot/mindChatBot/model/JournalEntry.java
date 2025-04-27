@@ -1,8 +1,10 @@
 package MindChatBot.mindChatBot.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,21 +18,6 @@ public class JournalEntry {
     private String userId;
     private String content;
     private LocalDateTime timestamp;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
 }

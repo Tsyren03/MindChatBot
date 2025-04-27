@@ -18,6 +18,19 @@ body {
     box-sizing: border-box;
 }
 
+/* Header */
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+h1 span {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Section Styling */
 .section {
     width: 80%;
     max-width: 800px;
@@ -34,7 +47,7 @@ h2 {
     color: #007bff;
 }
 
-/* Calendar Weekdays */
+/* Mood Tracker Section */
 .mood-tracker .calendar-weekdays {
     text-align: center;
     font-weight: bold;
@@ -50,20 +63,18 @@ h2 {
     background-color: #f1f1f1;
     border-radius: 5px;
     font-size: 16px;
-    margin-right: 15px; /* Increased space between the days */
+    margin-right: 15px;
 }
 
-/* Highlight Sunday in red */
 .mood-tracker .calendar-weekdays span.sunday {
     color: red;
 }
 
-/* Calendar Layout */
+/* Calendar Days */
 #calendar {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7 columns for the days of the week */
-    gap: 10px; /* Adjust the gap between the days */
-    margin-bottom: 20px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
 }
 
 .calendar-day {
@@ -133,6 +144,7 @@ h2 {
     color: inherit;
 }
 
+/* Chat Section */
 .chat-box {
     width: 100%;
     height: 400px;
@@ -145,7 +157,7 @@ h2 {
     font-size: 18px;
 }
 
-/* Journaling */
+/* Journaling Section */
 textarea, input[type="date"] {
     width: 100%;
     padding: 10px;
@@ -154,7 +166,6 @@ textarea, input[type="date"] {
     border-radius: 5px;
 }
 
-/* Add specificity to submit button hover styles */
 button[type="submit"] {
     padding: 10px 20px;
     border: none;

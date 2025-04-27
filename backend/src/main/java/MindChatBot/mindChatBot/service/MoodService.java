@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-
 @Service
 public class MoodService {
 
@@ -20,7 +19,17 @@ public class MoodService {
     }
 
     public Mood saveMood(Mood mood) {
-        return moodRepository.save(mood);
+        // 먼저 year, month, day로 기존 Mood 있는지 찾아
+        Mood existingMood = moodRepository.findByYearAndMonthAndDay(mood.getYear(), mood.getMonth(), mood.getDay());
+
+        if (existingMood != null) {
+            // 이미 있으면 이걸 업데이트
+            existingMood.setEmoji(mood.getEmoji());
+            return moodRepository.save(existingMood);
+        } else {
+            // 없으면 새로운 Mood 저장
+            return moodRepository.save(mood);
+        }
     }
 
     public Map<String, Integer> getMoodStatistics() {

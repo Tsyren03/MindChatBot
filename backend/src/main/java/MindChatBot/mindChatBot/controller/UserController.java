@@ -1,40 +1,48 @@
 package MindChatBot.mindChatBot.controller;
 
-import MindChatBot.mindChatBot.model.User;
+import MindChatBot.mindChatBot.dto.AddUserRequest;
 import MindChatBot.mindChatBot.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.security.Principal;
 
-@RestController
-@RequestMapping("/api/users")
+@RequiredArgsConstructor
+@Controller // ❗ 여기 수정
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @GetMapping("/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        Optional<User> user = userService.findByUsername(username);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    // 회원가입 처리
+    @PostMapping("/user")
+    public String signUp(AddUserRequest request) {
+        userService.save(request);
+        return "redirect:/login";
+    }
+    @GetMapping("/admin")
+    public String adminPage() {
+        return "admin"; // templates/admin.html
+    }
+    // 로그인 후 사용자 홈 화면
+    @GetMapping("/user")
+    public String userHomePage(Principal principal, Model model) {
+        String email = principal.getName(); // Getting the logged-in user's email
+        System.out.println("Logged in user's email: " + email); // Debugging line
+        model.addAttribute("email", email); // Passing the email to the view
+        return "index"; // Returning the HTML page
     }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User savedUser = userService.saveUser(user);
-        return ResponseEntity.ok(savedUser);
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {
-        user.setId(id);
-        User updatedUser = userService.saveUser(user);
-        return ResponseEntity.ok(updatedUser);
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+    // 로그아웃
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        new SecurityContextLogoutHandler()
+                .logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+        return "redirect:/login";
     }
 }

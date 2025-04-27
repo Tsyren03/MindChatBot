@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/mindChatBotDB   # Update with your MongoDB URI and database name
+      username: yourUsername                       # If authentication is needed
+      password: yourPassword                       # If authentication is needed
+      database: users                    # Specify the name of the database you're using
+  mongodb:
+    host: localhost                               # Specify the host if needed (default is localhost)
+    port: 27017                                   # Default MongoDB port
+  web:
+    resources:
+      static-locations: classpath:/static/         # Define static file location if needed

@@ -9,5 +9,4 @@ public class MindChatBotApplication {
     public static void main(String[] args) {
         SpringApplication.run(MindChatBotApplication.class, args);
     }
-
 }

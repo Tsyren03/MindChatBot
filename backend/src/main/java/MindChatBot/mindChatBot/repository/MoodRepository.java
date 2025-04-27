@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface MoodRepository extends MongoRepository<Mood, String> {
     List<Mood> findByYearAndMonth(int year, int month);
+    Mood findByYearAndMonthAndDay(int year, int month, int day);
 }
