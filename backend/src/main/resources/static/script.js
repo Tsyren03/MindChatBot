@@ -42,12 +42,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
-
     async function fetchMoods(year, month) {
-        const response = await fetch(`/api/moods/${year}/${month + 1}`);
+        const response = await fetch('/user/moods/fetch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ year: year, month: month + 1 })
+        });
         return response.json();
     }
 
+    async function saveMood(mood) {
+        const response = await fetch('/user/moods/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(mood)
+        });
+        return response.json();
+    }
+
+    async function fetchMoodStats() {
+        const response = await fetch('/user/moods/stats');
+        return response.json();
+    }
     async function updateCalendar() {
         calendar.innerHTML = "";
 
@@ -137,12 +153,11 @@ async function setMood(moodValue) {
         emoji: moodValue
     };
 
-    await fetch('/api/moods', {
+    await fetch('/user/moods/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mood)
     });
-
     switch (moodValue) {
         case 'bad': selectedDayElement.style.backgroundColor = '#ff4d4d'; break;
         case 'poor': selectedDayElement.style.backgroundColor = '#ffa500'; break;
@@ -150,7 +165,8 @@ async function setMood(moodValue) {
         case 'good': selectedDayElement.style.backgroundColor = '#90ee90'; break;
         case 'best': selectedDayElement.style.backgroundColor = '#32cd32'; break;
     }
-}async function sendMessage() {
+}
+async function sendMessage() {
      const input = document.getElementById("user-input");
      const message = input.value.trim();
 

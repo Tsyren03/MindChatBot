@@ -7,26 +7,42 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-@RequestMapping("/api/moods")
+@RequestMapping("/user/moods")
 public class MoodController {
 
     @Autowired
     private MoodService moodService;
 
-    @GetMapping("/{year}/{month}")
-    public List<Mood> getMoods(@PathVariable int year, @PathVariable int month) {
-        return moodService.getMoodsByMonth(year, month);
+    @PostMapping("/fetch")
+    public List<Mood> getMoodsByJson(@RequestBody Map<String, Integer> request) {
+        String userId = getCurrentUserId();
+        Integer year = request.get("year");
+        Integer month = request.get("month");
+
+        if (year == null || month == null) {
+            throw new IllegalArgumentException("Year and month must be provided.");
+        }
+
+        return moodService.getMoodsByMonth(userId, year, month);
     }
 
-    @PostMapping
+    @PostMapping("/save")
     public Mood saveMood(@RequestBody Mood mood) {
-        return moodService.saveMood(mood);
+        String userId = getCurrentUserId();
+        return moodService.saveMood(userId, mood);
     }
     @GetMapping("/stats")
-    public Map<String, Integer> getMoodStats() {
-        return moodService.getMoodStatistics();
+    public Map<String, Integer> getMoodStats(@RequestParam String userId) {
+        // userId를 받아 해당 사용자에 대한 mood 통계만 가져옴
+        return moodService.getMoodStatistics(userId);
     }
 
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ((MindChatBot.mindChatBot.model.User) authentication.getPrincipal()).getId();
+    }
 }

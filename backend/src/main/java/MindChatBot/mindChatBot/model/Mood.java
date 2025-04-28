@@ -11,6 +11,7 @@ public class Mood {
     @Id
     private String id;  // MongoDB uses String for IDs by default
     private int year;
+    private String userId;
     private int month;
     private int day;
     private String emoji;

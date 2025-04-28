@@ -8,43 +8,40 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+
 @Service
 public class MoodService {
 
     @Autowired
     private MoodRepository moodRepository;
 
-    public List<Mood> getMoodsByMonth(int year, int month) {
-        return moodRepository.findByYearAndMonth(year, month);
+    public List<Mood> getMoodsByMonth(String userId, int year, int month) {
+        return moodRepository.findByUserIdAndYearAndMonth(userId, year, month);
     }
 
-    public Mood saveMood(Mood mood) {
-        // 먼저 year, month, day로 기존 Mood 있는지 찾아
-        Mood existingMood = moodRepository.findByYearAndMonthAndDay(mood.getYear(), mood.getMonth(), mood.getDay());
+    public Mood saveMood(String userId, Mood mood) {
+        Mood existingMood = moodRepository.findByUserIdAndYearAndMonthAndDay(userId, mood.getYear(), mood.getMonth(), mood.getDay());
 
         if (existingMood != null) {
-            // 이미 있으면 이걸 업데이트
             existingMood.setEmoji(mood.getEmoji());
             return moodRepository.save(existingMood);
         } else {
-            // 없으면 새로운 Mood 저장
-            return moodRepository.save(mood);
+            mood.setUserId(userId); // Ensure userId is set
+            return moodRepository.save(mood);  // Save new mood
         }
     }
 
-    public Map<String, Integer> getMoodStatistics() {
-        List<Mood> allMoods = moodRepository.findAll();
+    public Map<String, Integer> getMoodStatistics(String userId) {
+        // userId에 해당하는 사용자의 mood 통계 처리
+        List<Mood> moods = moodRepository.findByUserId(userId);
+
+        // 통계 카운트 (예: bad, poor, neutral, good, best)
         Map<String, Integer> stats = new HashMap<>();
-
-        stats.put("bad", 0);
-        stats.put("poor", 0);
-        stats.put("neutral", 0);
-        stats.put("good", 0);
-        stats.put("best", 0);
-
-        for (Mood mood : allMoods) {
-            stats.put(mood.getEmoji(), stats.getOrDefault(mood.getEmoji(), 0) + 1);
-        }
+        stats.put("bad", (int) moods.stream().filter(m -> m.getEmoji().equals("bad")).count());
+        stats.put("poor", (int) moods.stream().filter(m -> m.getEmoji().equals("poor")).count());
+        stats.put("neutral", (int) moods.stream().filter(m -> m.getEmoji().equals("neutral")).count());
+        stats.put("good", (int) moods.stream().filter(m -> m.getEmoji().equals("good")).count());
+        stats.put("best", (int) moods.stream().filter(m -> m.getEmoji().equals("best")).count());
 
         return stats;
     }

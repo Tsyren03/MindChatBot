@@ -22,7 +22,7 @@ public class OpenAiService {
 
     public Mono<String> sendMessageToOpenAI(String message, String userId) {
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-3.5-turbo");
+        requestBody.put("model", "gpt-4.1-nano");
         requestBody.put("messages", new Object[] {
                 Map.of("role", "system", "content", "You are a helpful assistant."),
                 Map.of("role", "user", "content", message)

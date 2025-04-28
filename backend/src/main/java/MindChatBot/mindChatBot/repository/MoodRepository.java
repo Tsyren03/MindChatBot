@@ -6,6 +6,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface MoodRepository extends MongoRepository<Mood, String> {
-    List<Mood> findByYearAndMonth(int year, int month);
-    Mood findByYearAndMonthAndDay(int year, int month, int day);
+
+    List<Mood> findByUserIdAndYearAndMonth(String userId, int year, int month);
+
+    Mood findByUserIdAndYearAndMonthAndDay(String userId, int year, int month, int day);
+
+    List<Mood> findByUserId(String userId); // Added to match your usage
 }
