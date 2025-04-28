@@ -14,9 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @RequestMapping("/user/moods")
 public class MoodController {
 
-    @Autowired
-    private MoodService moodService;
+    private final MoodService moodService;
 
+    public MoodController(MoodService moodService) {
+        this.moodService = moodService;
+    }
     @PostMapping("/fetch")
     public List<Mood> getMoodsByJson(@RequestBody Map<String, Integer> request) {
         String userId = getCurrentUserId();
@@ -36,8 +38,8 @@ public class MoodController {
         return moodService.saveMood(userId, mood);
     }
     @GetMapping("/stats")
-    public Map<String, Integer> getMoodStats(@RequestParam String userId) {
-        // userId를 받아 해당 사용자에 대한 mood 통계만 가져옴
+    public Map<String, Integer> getMoodStats() {
+        String userId = getCurrentUserId();  // **현재 로그인된 유저 ID를 가져온다**
         return moodService.getMoodStatistics(userId);
     }
 
