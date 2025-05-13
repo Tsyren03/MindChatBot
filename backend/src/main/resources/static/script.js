@@ -1,39 +1,39 @@
-// 이 코드를 script.js 파일에 추가
 document.addEventListener("DOMContentLoaded", function () {
+    // === 1. Note Form Submission ===
     const form = document.getElementById("new-note-form");
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault(); // 기본 폼 제출 막기
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-        const content = document.getElementById("note-content").value;
-        const date = document.getElementById("note-date").value;
+            const content = document.getElementById("note-content").value;
+            const date = document.getElementById("note-date").value;
+            const { token } = getUserIdFromToken();
 
-        fetch("/user/notes", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                content: content,
-                date: date
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("Note saved successfully!");
-                form.reset(); // 폼 초기화
-            } else {
-                alert("Failed to save note.");
+            try {
+                const response = await fetch("/user/notes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token && { "Authorization": `Bearer ${token}` })
+                    },
+                    body: JSON.stringify({ content, date })
+                });
+
+                if (response.ok) {
+                    alert("Note saved successfully!");
+                    form.reset();
+                } else {
+                    alert("Failed to save note.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while saving the note.");
             }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred while saving the note.");
         });
-    });
-});
-// Calendar rendering
-document.addEventListener("DOMContentLoaded", function () {
+    }
+
+    // === 2. Calendar Rendering ===
     const calendar = document.getElementById("calendar");
     const currentDateElement = document.getElementById("current-date");
     const prevMonthButton = document.getElementById("prev-month");
@@ -42,33 +42,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
+
     async function fetchMoods(year, month) {
+        const { token } = getUserIdFromToken();
         const response = await fetch('/user/moods/fetch', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ year: year, month: month + 1 })
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { "Authorization": `Bearer ${token}` })
+            },
+            body: JSON.stringify({ year, month: month + 1 })
         });
         return response.json();
     }
 
-    async function saveMood(mood) {
-        const response = await fetch('/user/moods/save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(mood)
-        });
-        return response.json();
-    }
-
-    async function fetchMoodStats() {
-        const response = await fetch('/user/moods/stats');
-        return response.json();
-    }
     async function updateCalendar() {
         calendar.innerHTML = "";
-
         currentMonthElement.textContent = new Date(currentYear, currentMonth)
             .toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        currentMonthElement.dataset.year = currentYear;
+        currentMonthElement.dataset.month = currentMonth;
 
         const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
         const startDay = (firstDayOfMonth.getDay() + 6) % 7;
@@ -81,23 +74,22 @@ document.addEventListener("DOMContentLoaded", function () {
             calendar.appendChild(emptyCell);
         }
 
-        // Add actual day elements
         for (let day = 1; day <= daysInMonth; day++) {
             const dayElement = document.createElement("div");
             dayElement.classList.add("calendar-day");
             dayElement.textContent = day;
             dayElement.dataset.day = day;
 
-            // Apply color based on mood
             const mood = savedMoods.find(m => m.day === day);
             if (mood) {
-                switch (mood.emoji) {
-                    case 'bad': dayElement.style.backgroundColor = '#ff4d4d'; break;
-                    case 'poor': dayElement.style.backgroundColor = '#ffa500'; break;
-                    case 'neutral': dayElement.style.backgroundColor = '#d3d3d3'; break;
-                    case 'good': dayElement.style.backgroundColor = '#90ee90'; break;
-                    case 'best': dayElement.style.backgroundColor = '#32cd32'; break;
-                }
+                const colorMap = {
+                    bad: '#ff4d4d',
+                    poor: '#ffa500',
+                    neutral: '#d3d3d3',
+                    good: '#90ee90',
+                    best: '#32cd32'
+                };
+                dayElement.style.backgroundColor = colorMap[mood.emoji] || '';
             }
 
             dayElement.addEventListener("click", () => selectDay(dayElement));
@@ -105,13 +97,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    prevMonthButton.addEventListener("click", () => {
+    prevMonthButton?.addEventListener("click", () => {
         currentMonth--;
         if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         updateCalendar();
     });
 
-    nextMonthButton.addEventListener("click", () => {
+    nextMonthButton?.addEventListener("click", () => {
         currentMonth++;
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         updateCalendar();
@@ -121,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCalendar();
 });
 
-// Select a day
+// === 3. Select Day ===
 function selectDay(dayElement) {
     document.querySelectorAll(".calendar-day").forEach(el => el.classList.remove("selected"));
     dayElement.classList.add("selected");
@@ -129,12 +121,16 @@ function selectDay(dayElement) {
     const noteDateInput = document.getElementById("note-date");
     if (noteDateInput) {
         const selectedDate = new Date();
-        selectedDate.setFullYear(currentYear, currentMonth, dayElement.dataset.day);
+        selectedDate.setFullYear(
+            parseInt(document.getElementById("current-month").dataset.year),
+            parseInt(document.getElementById("current-month").dataset.month),
+            dayElement.dataset.day
+        );
         noteDateInput.value = selectedDate.toISOString().split('T')[0];
     }
 }
 
-// Set Mood
+// === 4. Set Mood ===
 async function setMood(moodValue) {
     const selectedDayElement = document.querySelector(".calendar-day.selected");
     if (!selectedDayElement) {
@@ -142,76 +138,84 @@ async function setMood(moodValue) {
         return;
     }
 
+    const { token } = getUserIdFromToken();
     const day = selectedDayElement.dataset.day;
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
+    const year = parseInt(document.getElementById("current-month").dataset.year);
+    const month = parseInt(document.getElementById("current-month").dataset.month);
 
     const mood = {
-        year: currentYear,
-        month: currentMonth + 1,
+        year,
+        month: month + 1,
         day: parseInt(day),
         emoji: moodValue
     };
 
     await fetch('/user/moods/save', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { "Authorization": `Bearer ${token}` })
+        },
         body: JSON.stringify(mood)
     });
-    switch (moodValue) {
-        case 'bad': selectedDayElement.style.backgroundColor = '#ff4d4d'; break;
-        case 'poor': selectedDayElement.style.backgroundColor = '#ffa500'; break;
-        case 'neutral': selectedDayElement.style.backgroundColor = '#d3d3d3'; break;
-        case 'good': selectedDayElement.style.backgroundColor = '#90ee90'; break;
-        case 'best': selectedDayElement.style.backgroundColor = '#32cd32'; break;
+
+    const colorMap = {
+        bad: '#ff4d4d',
+        poor: '#ffa500',
+        neutral: '#d3d3d3',
+        good: '#90ee90',
+        best: '#32cd32'
+    };
+    selectedDayElement.style.backgroundColor = colorMap[moodValue] || '';
+}
+
+// === 5. Chat Message Handling ===
+async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+    if (message === "") return;
+
+    addMessage("user", message);
+    input.value = "";
+
+    const { userId, token } = getUserIdFromToken();
+
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { "Authorization": `Bearer ${token}` })
+            },
+            body: JSON.stringify({ message, userId })
+        });
+
+        const data = await response.json();
+        if (data.response) {
+            addMessage("bot", data.response);
+        } else {
+            addMessage("bot", "⚠️ " + (data.error || "Unknown server response."));
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+        addMessage("bot", "⚠️ Server error occurred.");
     }
 }
-async function sendMessage() {
-     const input = document.getElementById("user-input");
-     const message = input.value.trim();
 
-     if (message === "") return;
+function getUserIdFromToken() {
+    const token = localStorage.getItem("authToken");
+    if (!token) return { userId: "anonymous", token: null };
 
-     addMessage("user", message);
-     input.value = "";
-
-     const token = localStorage.getItem("authToken");
-     let userId = "anonymous";
-
-     if (token) {
-         try {
-             const decodedToken = JSON.parse(atob(token.split('.')[1]));
-             userId = decodedToken.userId;
-         } catch (error) {
-             console.error("Error decoding token:", error);
-             localStorage.removeItem("authToken");
-             userId = "anonymous";
-         }
-     }
-
-     try {
-         const response = await fetch("/api/chat", {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({ message: message, userId: userId })
-         });
-
-         const data = await response.json();
-         console.log("API Response:", data);
-
-         if (data.response) {
-             addMessage("bot", data.response);
-         } else if (data.error) {
-             addMessage("bot", "⚠️ Error: " + data.error);
-         } else {
-             addMessage("bot", "⚠️ Unknown response from server.");
-         }
-     } catch (error) {
-         console.error("Error sending message:", error);
-         addMessage("bot", "⚠️ Server error occurred.");
-     }
- }
-
+    try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        const userId = decoded.userId || decoded.sub || decoded.email || decoded.username || "anonymous";
+        return { userId, token };
+    } catch (error) {
+        console.error("Error decoding token:", error);
+        localStorage.removeItem("authToken");
+        return { userId: "anonymous", token: null };
+    }
+}
 
 function addMessage(sender, text) {
     const messagesDiv = document.getElementById("messages");
@@ -221,3 +225,39 @@ function addMessage(sender, text) {
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+async function sendAllLogsAndMoods() {
+    try {
+        // Remove the authentication check
+        const userId = "Xizel.03@gmail.com"; // Assuming anonymous user if no login is required
+
+        addMessage("bot", "🔄 Analyzing mood patterns and journal entries...");
+
+        const response = await fetch("/api/chat/sendAllData", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ userId })
+        });
+
+        const result = await response.json();
+
+        if (result.response) {
+            addMessage("bot", result.response);
+        } else {
+            addMessage("bot", "⚠️ Error: " + (result.error || "No insights could be generated"));
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        addMessage("bot", "⚠️ Failed to analyze data: " + error.message);
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const sendAllButton = document.getElementById("send-all-button");
+    if (sendAllButton) {
+        sendAllButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            sendAllLogsAndMoods();
+        });
+    }
+});

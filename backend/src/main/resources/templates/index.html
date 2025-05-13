@@ -1,79 +1,85 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mental Health Support</title>
-    <link rel="stylesheet" th:href="@{/styles.css}">
-</head>
-<body>
-<h1>
-    <small style="font-size: 0.6em;">Welcome,</small><br>
-    <span style="font-size: 1.5em; font-weight: bold;" th:text="${email}">User</span>
-</h1>
-
-<main class="container">
-    <!-- Mood Tracker Section -->
-    <section class="section mood-tracker">
-        <h2>Mood Tracker</h2>
-        <div class="today-date" id="current-date"></div>
-        <div class="calendar-controls">
-            <button class="stylish-btn" id="prev-month" aria-label="Previous Month">◀</button>
-            <span id="current-month">March 2025</span>
-            <button class="stylish-btn" id="next-month" aria-label="Next Month">▶</button>
-        </div>
-        <div class="calendar">
-            <div class="calendar-weekdays">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span class="sunday">Sun</span>
-            </div>
-            <div id="calendar"></div>
-        </div>
-        <div class="emotion-buttons">
-            <button class="mood-btn bad" onclick="setMood('bad')" aria-label="Bad Mood">😞 Bad</button>
-            <button class="mood-btn poor" onclick="setMood('poor')" aria-label="Poor Mood">😕 Poor</button>
-            <button class="mood-btn neutral" onclick="setMood('neutral')" aria-label="Neutral Mood">😐 Neutral</button>
-            <button class="mood-btn good" onclick="setMood('good')" aria-label="Good Mood">🙂 Good</button>
-            <button class="mood-btn best" onclick="setMood('best')" aria-label="Best Mood">😃 Best</button>
-        </div>
-        <div class="note">
-            <a href="/statistics.html" class="stats-link">📊 View Mood Statistics</a>
-        </div>
-    </section>
-
-    <!-- Journaling Section -->
-    <section class="section journaling">
-        <h2>Journaling</h2>
-        <form id="new-note-form">
-            <label for="note-content">Note Content:</label>
-            <textarea id="note-content" name="content" required placeholder="Write your note here..."></textarea>
-            <label for="note-date">Date:</label>
-            <input type="date" id="note-date" name="date" required>
-            <button type="submit">Save Note</button>
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mental Health Support</title>
+        <link rel="stylesheet" th:href="@{/styles.css}">
+    </head>
+    <body>
+    <h1>
+        <small style="font-size: 0.6em;">Welcome,</small><br>
+        <span style="font-size: 1.5em; font-weight: bold;" th:text="${email}">User</span>
+    </h1>
+    <div class="logout-section">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="stylish-btn">Logout</button>
         </form>
-        <div class="note">
-            <a href="/notes.html">View all notes</a>
-        </div>
-    </section>
+    </div>
 
-    <!-- Chat Box Section -->
-    <section class="section chat-section">
-        <h2>Mind Chat Bot</h2>
-        <div class="chat-box" id="chat-box">
-            <div class="messages" id="messages"></div>
-            <div class="input-area" style="display: flex; gap: 10px; width: 100%; margin-top: 10px;">
-                <input type="text" id="user-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                <button onclick="sendMessage()" style="padding: 10px 20px; border: none; border-radius: 5px; background-color: #007bff; color: #fff;">Send</button>
+    <main class="container">
+        <!-- Mood Tracker Section -->
+        <section class="section mood-tracker">
+            <h2>Mood Tracker</h2>
+            <div class="today-date" id="current-date"></div>
+            <div class="calendar-controls">
+                <button class="stylish-btn" id="prev-month" aria-label="Previous Month">◀</button>
+                <span id="current-month">March 2025</span>
+                <button class="stylish-btn" id="next-month" aria-label="Next Month">▶</button>
             </div>
-        </div>
-    </section>
-</main>
+            <div class="calendar">
+                <div class="calendar-weekdays">
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span class="sunday">Sun</span>
+                </div>
+                <div id="calendar"></div>
+            </div>
+            <div class="emotion-buttons">
+                <button class="mood-btn bad" onclick="setMood('bad')" aria-label="Bad Mood">😞 Bad</button>
+                <button class="mood-btn poor" onclick="setMood('poor')" aria-label="Poor Mood">😕 Poor</button>
+                <button class="mood-btn neutral" onclick="setMood('neutral')" aria-label="Neutral Mood">😐 Neutral</button>
+                <button class="mood-btn good" onclick="setMood('good')" aria-label="Good Mood">🙂 Good</button>
+                <button class="mood-btn best" onclick="setMood('best')" aria-label="Best Mood">😃 Best</button>
+            </div>
+            <div class="note">
+                <a href="/statistics.html" class="stats-link">📊 View Mood Statistics</a>
+            </div>
+        </section>
 
-<script th:src="@{/script.js}"></script>
-</body>
-</html>
+        <!-- Journaling Section -->
+        <section class="section journaling">
+            <h2>Journaling</h2>
+            <form id="new-note-form">
+                <label for="note-content">Note Content:</label>
+                <textarea id="note-content" name="content" required placeholder="Write your note here..."></textarea>
+                <label for="note-date">Date:</label>
+                <input type="date" id="note-date" name="date" required>
+                <button type="submit">Save Note</button>
+            </form>
+            <div class="note">
+                <a href="/notes.html">View all notes</a>
+            </div>
+        </section>
+
+        <!-- Chat Box Section -->
+        <section class="section chat-section">
+            <h2>Mind Chat Bot</h2>
+            <div class="chat-box" id="chat-box">
+                <div class="messages" id="messages"></div>
+                <div class="input-area" style="display: flex; gap: 10px; width: 100%; margin-top: 10px;">
+                    <input type="text" id="user-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <button onclick="sendMessage()" style="padding: 10px 20px; border: none; border-radius: 5px; background-color: #007bff; color: #fff;">Send</button>
+                </div>
+                <button id="send-all-button">Send All Logs and Moods</button>
+            </div>
+        </section>
+    </main>
+
+    <script th:src="@{/script.js}"></script>
+    </body>
+    </html>

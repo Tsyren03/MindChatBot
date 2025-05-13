@@ -1,5 +1,7 @@
 package MindChatBot.mindChatBot.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import MindChatBot.mindChatBot.model.JournalEntry;
 
@@ -8,9 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JournalEntryRepository extends MongoRepository<JournalEntry, String> {
-    List<JournalEntry> findByUserId(String userId);
-    Optional<JournalEntry> findByUserIdAndDate(String userId, LocalDate date);
+    Page<JournalEntry> findByUserIdOrderByTimestampDesc(String userId, Pageable pageable);
 
-    // ✅ 추가: 날짜에 해당하는 모든 노트 (목록 반환용)
+    // Other repository methods (e.g., findByUserId, findByUserIdAndDate, etc.)
+    List<JournalEntry> findByUserId(String userId);
     List<JournalEntry> findAllByUserIdAndDate(String userId, LocalDate date);
+    Optional<JournalEntry> findByUserIdAndDate(String userId, LocalDate date);
 }

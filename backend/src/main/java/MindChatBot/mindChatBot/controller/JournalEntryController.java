@@ -61,4 +61,9 @@ public class JournalEntryController {
         // Save the note through the service layer
         return journalEntryService.saveEntry(note);
     }
+    @GetMapping("/all")
+    public List<JournalEntry> getAllNotes() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return journalEntryService.getAllEntriesForUser(userId);
+    }
 }

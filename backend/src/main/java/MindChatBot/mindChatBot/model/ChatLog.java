@@ -16,6 +16,11 @@ public class ChatLog {
     private String message;
     private String response;
     private LocalDateTime timestamp;
-
+    public ChatLog(String userId, String message, String response) {
+        this.userId = userId;
+        this.message = message;
+        this.response = response;
+        this.timestamp = LocalDateTime.now();
+    }
     // No need to manually create constructors or getters/setters as Lombok handles it.
 }

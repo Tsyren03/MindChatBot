@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -16,9 +17,11 @@ public class MoodController {
 
     private final MoodService moodService;
 
+    @Autowired
     public MoodController(MoodService moodService) {
         this.moodService = moodService;
     }
+
     @PostMapping("/fetch")
     public List<Mood> getMoodsByJson(@RequestBody Map<String, Integer> request) {
         String userId = getCurrentUserId();
@@ -37,14 +40,21 @@ public class MoodController {
         String userId = getCurrentUserId();
         return moodService.saveMood(userId, mood);
     }
+
     @GetMapping("/stats")
-    public Map<String, Integer> getMoodStats() {
-        String userId = getCurrentUserId();  // **현재 로그인된 유저 ID를 가져온다**
-        return moodService.getMoodStatistics(userId);
+    public Map<String, Double> getMoodStats() {  // Changed to return Map<String, Double>
+        String userId = getCurrentUserId();
+        return moodService.getMoodStatistics(userId);  // Return mood statistics as percentages
     }
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ((MindChatBot.mindChatBot.model.User) authentication.getPrincipal()).getId();
+    }
+
+    @GetMapping("/all")
+    public List<Mood> getAllMoods() {
+        String userId = getCurrentUserId();
+        return moodService.getAllMoodsForUser(userId);
     }
 }
