@@ -29,48 +29,44 @@ public class OpenAiService {
         this.webClient = webClientBuilder.baseUrl("https://api.openai.com/v1").build();
         this.chatLogRepository = chatLogRepository;
     }
+    public Mono<String> sendMessageToOpenAI(List<ChatLog> history, String message, String userId) {
+        List<Map<String, String>> messages = new ArrayList<>();
 
-    public Mono<String> sendMessageToOpenAI(String message, String userId) {
-        return Mono.fromCallable(() -> chatLogRepository.findByUserIdOrderByTimestampAsc(userId))
-                .map(historyList -> {
-                    // Use only the latest 5 chat history messages
-                    int size = historyList.size();
-                    if (size > 5) {
-                        return historyList.subList(size - 5, size);
+        // 시스템 프롬프트를 system role로 추가
+        messages.add(Map.of("role", "system", "content", systemPrompt));
+
+        // 기존 히스토리 추가
+        for (ChatLog chat : history) {
+            messages.add(Map.of("role", "user", "content", chat.getMessage()));
+            messages.add(Map.of("role", "assistant", "content", chat.getResponse()));
+        }
+
+        // 현재 사용자 메시지 추가
+        messages.add(Map.of("role", "user", "content", message));
+
+        // 전체 요청을 Map으로 구성
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", model);
+        requestBody.put("messages", messages);
+
+        return webClient.post()
+                .uri("/chat/completions")
+                .header("Authorization", "Bearer " + openaiApiKey)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(Map.class) // JSON 전체를 Map으로 파싱
+                .flatMap(responseMap -> {
+                    try {
+                        List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
+                        if (choices != null && !choices.isEmpty()) {
+                            Map<String, Object> messageMap = (Map<String, Object>) choices.get(0).get("message");
+                            String content = (String) messageMap.get("content");
+                            return Mono.justOrEmpty(content);
+                        }
+                    } catch (Exception e) {
+                        return Mono.error(new RuntimeException("Error parsing OpenAI response", e));
                     }
-                    return historyList;
-                })
-                .flatMap(history -> {
-                    List<Map<String, String>> messages = new ArrayList<>();
-
-                    // System prompt: define chatbot role and tone
-                    messages.add(Map.of("role", "system", "content", systemPrompt));
-
-                    // Add previous chat history
-                    for (ChatLog log : history) {
-                        messages.add(Map.of("role", "user", "content", log.getMessage()));
-                        messages.add(Map.of("role", "assistant", "content", log.getResponse()));
-                    }
-
-                    // Add the latest user message
-                    messages.add(Map.of("role", "user", "content", message));
-
-                    Map<String, Object> requestBody = Map.of(
-                            "model", model,
-                            "messages", messages
-                    );
-
-                    // Call OpenAI Chat Completion API
-                    return webClient.post()
-                            .uri("/chat/completions")
-                            .header("Authorization", "Bearer " + openaiApiKey)
-                            .header("Content-Type", "application/json")
-                            .bodyValue(requestBody)
-                            .retrieve()
-                            .bodyToMono(Map.class)
-                            .map(this::extractMessage)
-                            .map(opt -> opt.orElse("No response received from OpenAI."))
-                            .onErrorReturn("Failed to communicate with OpenAI.");
+                    return Mono.empty();
                 });
     }
 

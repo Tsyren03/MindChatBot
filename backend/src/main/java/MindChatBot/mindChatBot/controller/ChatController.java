@@ -39,11 +39,21 @@ public class ChatController {
             return Mono.just(ResponseEntity.badRequest().body(Map.of("error", "Message is empty.")));
         }
 
-        return openAiService.sendMessageToOpenAI(message, userId)
-                .flatMap(response -> openAiService.saveChatLog(userId, message, response)
-                        .thenReturn(ResponseEntity.ok(Map.of("response", response))))
-                .onErrorResume(error -> Mono.just(
-                        ResponseEntity.status(500).body(Map.of("error", "An error occurred while communicating with OpenAI."))));
+        return openAiService.getChatHistory(userId)
+                .collectList()
+                .flatMap(historyList -> {
+                    // Optionally include only last few messages
+                    int maxHistory = Math.min(5, historyList.size());
+                    List<ChatLog> recentHistory = historyList.subList(historyList.size() - maxHistory, historyList.size());
+
+                    return openAiService.sendMessageToOpenAI(recentHistory, message, userId)
+                            .flatMap(response -> openAiService.saveChatLog(userId, message, response)
+                                    .thenReturn(ResponseEntity.ok(Map.of("response", response))));
+                })
+                .onErrorResume(error -> {
+                    error.printStackTrace();
+                    return Mono.just(ResponseEntity.status(500).body(Map.of("error", "An error occurred while communicating with OpenAI.")));
+                });
     }
 
     @GetMapping("/history/{userId}")
@@ -86,9 +96,11 @@ public class ChatController {
 
         String fullMessage = messageBuilder.toString();
 
-        return openAiService.sendMessageToOpenAI(fullMessage, userId)
-                .flatMap(response -> openAiService.saveChatLog(userId, fullMessage, response)
-                        .thenReturn(ResponseEntity.ok(Map.of("response", response))))
+        return openAiService.getChatHistory(userId)
+                .collectList()
+                .flatMap(history -> openAiService.sendMessageToOpenAI(history, fullMessage, userId)
+                        .flatMap(response -> openAiService.saveChatLog(userId, fullMessage, response)
+                                .thenReturn(ResponseEntity.ok(Map.of("response", response)))))
                 .onErrorResume(error -> Mono.just(
                         ResponseEntity.status(500).body(Map.of("error", "An error occurred while processing OpenAI response."))));
     }
