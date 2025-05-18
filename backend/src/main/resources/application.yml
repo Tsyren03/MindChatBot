@@ -11,3 +11,8 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/         # Define static file location if needed
+openai:
+  api:
+  model: gpt-4.1-nano
+  system:
+    prompt: You are a kind and supportive mental health assistant.

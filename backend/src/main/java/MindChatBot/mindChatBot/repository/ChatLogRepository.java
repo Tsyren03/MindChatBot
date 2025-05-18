@@ -5,8 +5,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
+
 @Repository
 public interface ChatLogRepository extends MongoRepository<ChatLog, String> {
-    // Custom query method to find all chat logs by userId
-    Flux<ChatLog> findByUserId(String userId);
+    List<ChatLog> findByUserIdOrderByTimestampAsc(String userId);
 }

@@ -1,7 +1,7 @@
 package MindChatBot.mindChatBot.controller;
 
+import MindChatBot.mindChatBot.model.ChatLog;
 import MindChatBot.mindChatBot.model.JournalEntry;
-import MindChatBot.mindChatBot.model.Mood;
 import MindChatBot.mindChatBot.service.JournalEntryService;
 import MindChatBot.mindChatBot.service.MoodService;
 import MindChatBot.mindChatBot.service.OpenAiService;
@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -42,49 +40,56 @@ public class ChatController {
         }
 
         return openAiService.sendMessageToOpenAI(message, userId)
-                .map(response -> ResponseEntity.ok(Map.of("response", response)))
+                .flatMap(response -> openAiService.saveChatLog(userId, message, response)
+                        .thenReturn(ResponseEntity.ok(Map.of("response", response))))
                 .onErrorResume(error -> Mono.just(
-                        ResponseEntity.status(500).body(Map.of("error", "Error communicating with OpenAI.")))
-                );
+                        ResponseEntity.status(500).body(Map.of("error", "An error occurred while communicating with OpenAI."))));
+    }
+
+    @GetMapping("/history/{userId}")
+    public Mono<ResponseEntity<List<ChatLog>>> getChatHistory(@PathVariable String userId) {
+        return openAiService.getChatHistory(userId)
+                .collectList()
+                .map(ResponseEntity::ok)
+                .onErrorResume(e -> Mono.just(ResponseEntity.internalServerError().build()));
     }
 
     @PostMapping("/sendAllData")
     public Mono<ResponseEntity<Map<String, String>>> sendAllDataToBot(@RequestBody Map<String, String> requestBody) {
         String userId = requestBody.getOrDefault("userId", "anonymous");
-        // Prepare a compact message with a focus on mood data and analysis
         StringBuilder messageBuilder = new StringBuilder();
 
-// Mood Statistics Check
-        Map<String, Double> moodStatistics = moodService.getMoodStatistics(userId);
-        if (moodStatistics.isEmpty() || moodStatistics.values().stream().allMatch(value -> value == 0.0)) {
-            messageBuilder.append("It looks like your mood statistics haven't been recorded in the last 30 days. Would you like to share how you're feeling?");
+        Map<String, Double> moodStats = moodService.getMoodStatistics(userId);
+
+        if (moodStats.isEmpty() || moodStats.values().stream().allMatch(v -> v == 0.0)) {
+            messageBuilder.append("No mood statistics recorded in the last 30 days. Would you like to share how you're feeling now?");
         } else {
-            messageBuilder.append("User Mood Stats (last 30 days):\n");
-            messageBuilder.append("Bad: ").append(String.format("%.2f", moodStatistics.get("bad"))).append("%\n");
-            messageBuilder.append("Good: ").append(String.format("%.2f", moodStatistics.get("good"))).append("%\n");
-            messageBuilder.append("Neutral: ").append(String.format("%.2f", moodStatistics.get("neutral"))).append("%\n");
+            messageBuilder.append("User mood statistics for the last 30 days:\n")
+                    .append("Bad: ").append(String.format("%.2f", moodStats.getOrDefault("bad", 0.0))).append("%\n")
+                    .append("Good: ").append(String.format("%.2f", moodStats.getOrDefault("good", 0.0))).append("%\n")
+                    .append("Neutral: ").append(String.format("%.2f", moodStats.getOrDefault("neutral", 0.0))).append("%\n");
         }
 
-// Journal Entry Check
-        List<JournalEntry> latestEntries = journalEntryService.getRecentEntries(userId, 1);
-        if (latestEntries.isEmpty()) {
-            messageBuilder.append("\nIt looks like you don't have any recent journal entries. Would you like to write about how you're feeling?");
+        List<JournalEntry> recentJournals = journalEntryService.getRecentEntries(userId, 1);
+
+        if (recentJournals.isEmpty()) {
+            messageBuilder.append("\nNo recent journal entries found. Would you like to write about how you feel?");
         } else {
-            JournalEntry latest = latestEntries.get(0);
-            if (latest.getContent().length() < 3 || latest.getContent().matches(".*[\\W_].*")) {
-                messageBuilder.append("\nYour journal entry seems short or unclear. Feel free to share more about your thoughts or emotions.");
+            JournalEntry journal = recentJournals.get(0);
+            String content = journal.getContent() != null ? journal.getContent().trim() : "";
+            if (content.length() < 3 || content.matches(".*[\\W_].*")) {
+                messageBuilder.append("\nThe journal entry is short or unclear. How about writing your thoughts in more detail?");
             } else {
-                messageBuilder.append("\nRecent Journal: ").append(latest.getContent()).append("\n");
+                messageBuilder.append("\nRecent journal entry: ").append(content);
             }
         }
 
-// Send the full message to OpenAI
         String fullMessage = messageBuilder.toString();
 
         return openAiService.sendMessageToOpenAI(fullMessage, userId)
-                .map(response -> ResponseEntity.ok(Map.of("response", response)))
+                .flatMap(response -> openAiService.saveChatLog(userId, fullMessage, response)
+                        .thenReturn(ResponseEntity.ok(Map.of("response", response))))
                 .onErrorResume(error -> Mono.just(
-                        ResponseEntity.status(500).body(Map.of("error", "Failed to process data with OpenAI.")))
-                );
+                        ResponseEntity.status(500).body(Map.of("error", "An error occurred while processing OpenAI response."))));
     }
 }
