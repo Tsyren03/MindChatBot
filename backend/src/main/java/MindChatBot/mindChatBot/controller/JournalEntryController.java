@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,25 +43,13 @@ public class JournalEntryController {
 
     // ✅ 2. Create a new journal entry (note)
     @PostMapping
-    public JournalEntry createNote(@RequestBody JournalEntry note) {
-        // Ensure the userId is properly set before saving
+    public Mono<java.util.Map<String, Object>> createNote(@RequestBody JournalEntry note) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // Log the creation attempt
-        System.out.println("Creating note for user: " + userId); // Add logging for debugging
-
-        // Set the user ID for the note
         note.setUserId(userId);
-
-        // Set the current timestamp for the note
         note.setTimestamp(LocalDateTime.now());
-
-        // Log the note data to verify the content before saving
-        System.out.println("Saving note: " + note.toString());
-
-        // Save the note through the service layer
-        return journalEntryService.saveEntry(note);
+        return journalEntryService.saveEntryWithReply(note);
     }
+
     @GetMapping("/all")
     public List<JournalEntry> getAllNotes() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();

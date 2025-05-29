@@ -1,14 +1,16 @@
 package MindChatBot.mindChatBot.service;
 
 import MindChatBot.mindChatBot.model.JournalEntry;
+import MindChatBot.mindChatBot.model.Mood;
 import MindChatBot.mindChatBot.repository.JournalEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -17,19 +19,14 @@ public class JournalEntryService {
     private final JournalEntryRepository journalEntryRepository;
 
     @Autowired
+    private OpenAiService openAiService;
+
+    @Autowired
+    private MoodService moodService;
+
+    @Autowired
     public JournalEntryService(JournalEntryRepository journalEntryRepository) {
         this.journalEntryRepository = journalEntryRepository;
-    }
-
-    // Create a new journal entry
-    public JournalEntry createJournalEntry(String userId, String content, LocalDate date) {
-        JournalEntry journalEntry = new JournalEntry();
-        journalEntry.setUserId(userId);
-        journalEntry.setContent(content);
-        journalEntry.setDate(date);
-        journalEntry.setTimestamp(LocalDateTime.now());
-
-        return journalEntryRepository.save(journalEntry);
     }
 
     // Get all journal entries for a specific user
@@ -56,5 +53,39 @@ public class JournalEntryService {
     // Optional: Save entry (used by controller directly)
     public JournalEntry saveEntry(JournalEntry journalEntry) {
         return journalEntryRepository.save(journalEntry);
+    }
+
+    public Mono<java.util.Map<String, Object>> saveEntryWithReply(JournalEntry journalEntry) {
+        JournalEntry saved = journalEntryRepository.save(journalEntry);
+        String userId = journalEntry.getUserId();
+        String noteContent = journalEntry.getContent();
+        LocalDate noteDate = journalEntry.getDate();
+        return openAiService.analyzeMoodFromNote(noteContent)
+            .flatMap(moodMap -> {
+                // === Validate mood against MOOD_MAP ===
+                String main = moodMap.get("main");
+                String sub = moodMap.get("sub");
+                Map<String, List<String>> MOOD_MAP = Map.of(
+                    "best", List.of("proud", "grateful", "energetic", "excited", "fulfilled"),
+                    "good", List.of("calm", "productive", "hopeful", "motivated", "friendly"),
+                    "neutral", List.of("indifferent", "blank", "tired", "bored", "quiet"),
+                    "poor", List.of("frustrated", "overwhelmed", "nervous", "insecure", "confused"),
+                    "bad", List.of("angry", "sad", "lonely", "anxious", "hopeless")
+                );
+                boolean valid = main != null && sub != null && MOOD_MAP.containsKey(main) && MOOD_MAP.get(main).contains(sub);
+                // === Only return mood if valid ===
+                Map<String, Object> result = new java.util.HashMap<>();
+                result.put("note", saved);
+                if (valid) {
+                    result.put("mood", Map.of(
+                        "main", main,
+                        "sub", sub,
+                        "year", noteDate.getYear(),
+                        "month", noteDate.getMonthValue(),
+                        "day", noteDate.getDayOfMonth()
+                    ));
+                }
+                return Mono.just(result);
+            });
     }
 }

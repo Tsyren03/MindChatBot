@@ -223,25 +223,10 @@ body {
     transform: scale(1.08);
 }
 
-/* Submood 버튼 */
-#submood-buttons-container {
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    justify-content: flex-start;
-    gap: 8px;
-    margin-top: 12px;
-    margin-bottom: 0;
-    box-shadow: none;
-    border-radius: 0 0 12px 12px;
-    background: transparent;
-    padding-bottom: 0;
-    max-width: 100%;
-    display: flex;
-}
-
+/* Submood 버튼 스타일 (script.js에서 인라인 스타일 제거됨) */
 .submood-btn {
     min-width: 90px;
-    margin: 4px 0 4px 0;
+    margin: 4px 8px 8px 0;
     padding: 10px 18px;
     border-radius: 8px;
     border: none;
@@ -252,11 +237,22 @@ body {
     box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     outline: none;
     white-space: pre-line;
+    color: #222;
+    background: #e5e7eb;
 }
 
 .submood-btn:hover {
     transform: scale(1.07);
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    opacity: 0.92;
+}
+
+#submood-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 12px;
+    gap: 8px;
 }
 
 /* 노트 스타일 */
