@@ -1,237 +1,504 @@
 /* 기본 스타일 */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Noto Sans KR', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
-    color: #333;
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    color: #222;
+    min-height: 100vh;
 }
 
 /* 컨테이너 */
 .container {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
     width: 100%;
-    height: 100vh;
-    padding: 20px;
+    min-height: 100vh;
+    padding: 32px 2vw 32px 2vw;
     box-sizing: border-box;
-    gap: 20px;
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* 3단 컬럼 레이아웃 (1920x1080 기준) */
+.container.three-column-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100vh;
+    width: 100%;
 }
 
 /* 카드 스타일 */
 .section {
-    flex: 1;
+    flex: 1 1 340px;
+    min-width: 320px;
+    max-width: 480px;
     margin: 10px;
-    padding: 20px;
-    border-radius: 12px;
-    background-color: white;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 32px 20px 32px 20px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.97);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     text-align: center;
-    transition: transform 0.2s ease-in-out;
+    transition: box-shadow 0.2s, transform 0.2s;
+    border: 1.5px solid #e3eaf5;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .section:hover {
-    transform: scale(1.02);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.13);
+    transform: translateY(-2px) scale(1.01);
+}
+
+/* 캘린더(무드 트래커) 더 크게, 저널링 더 작게 */
+.section.mood-tracker {
+    flex: 1 1 0;
+    min-width: 320px;
+    max-width: 370px; /* 캘린더 영역을 더 좁게 */
+}
+.section.journaling {
+    max-width: 200px !important;
+    min-width: 120px !important;
+    flex: 0.7 1 120px !important;
+    padding: 18px 6px !important;
 }
 
 /* 감정 캘린더 스타일 */
+.calendar-responsive-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 340px; /* 캘린더 영역을 더 좁게 */
+    margin: 0 auto 0 auto;
+    background: rgba(247,250,253,0.98);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 8px 0 6px 0;
+    box-sizing: border-box;
+}
+
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 20px;
-    padding: 10px;
+    padding: 6px;
+    background: #f7fafd;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    width: 100%;
+    min-width: 0;
+    max-width: 320px;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #888;
+    font-weight: 500;
+}
+
+.sunday {
+    color: #e74c3c;
 }
 
 /* 감정별 색상 (버튼 & 캘린더) */
 .bad {
-    background-color: #ff4d4d;
-    color: white;
+    background: #ff4d4d !important;
+    color: #fff !important;
 }
 
 .poor {
-    background-color: #ffa500;
-    color: white;
+    background: #ffa500 !important;
+    color: #fff !important;
 }
 
 .neutral {
-    background-color: #d3d3d3;
-    color: black;
+    background: #d3d3d3 !important;
+    color: #222 !important;
 }
 
 .good {
-    background-color: #90ee90;
-    color: black;
+    background: #90ee90 !important;
+    color: #222 !important;
 }
 
 .best {
-    background-color: #32cd32;
-    color: white;
+    background: #32cd32 !important;
+    color: #fff !important;
 }
 
 /* 캘린더 날 스타일 */
 .calendar-day {
-    width: 50px;
-    height: 50px;
-    background-color: #ffffff;
+    width: 32px;
+    height: 32px;
+    background: #fff;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1.5px solid #e3eaf5;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background 0.2s, transform 0.15s, border 0.2s;
+    margin: 0 auto;
 }
 
 .calendar-day:hover {
-    background-color: #e3f2fd;
-    transform: scale(1.1);
+    background: #e3f2fd;
+    transform: scale(1.08);
+    border: 1.5px solid #90caf9;
 }
 
 /* 날짜 선택 시 애니메이션 효과 */
 .selected {
     outline: 3px solid #007bff;
+    background: #e3f0ff;
+    border: 1.5px solid #007bff;
 }
 
 /* 감정 버튼 */
 .emotion-buttons {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+/* 무드 버튼 한 줄 정렬 */
+.emotion-buttons.one-row {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-top: 18px;
+    width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: #b6c6e3 #f7fafd;
+}
+.emotion-buttons.one-row::-webkit-scrollbar {
+    height: 8px;
+}
+.emotion-buttons.one-row::-webkit-scrollbar-thumb {
+    background: #b6c6e3;
+    border-radius: 6px;
+}
+.emotion-buttons.one-row::-webkit-scrollbar-track {
+    background: #f7fafd;
+    border-radius: 6px;
 }
 
 .mood-btn {
-    padding: 10px 20px;
+    padding: 10px 22px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
 
 /* 버튼 호버 효과 */
 .mood-btn:hover {
-    opacity: 0.8;
-    transform: scale(1.05);
+    opacity: 0.9;
+    transform: scale(1.08);
+}
+
+/* Submood 버튼 */
+#submood-buttons-container {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 0;
+    box-shadow: none;
+    border-radius: 0 0 12px 12px;
+    background: transparent;
+    padding-bottom: 0;
+    max-width: 100%;
+    display: flex;
+}
+
+.submood-btn {
+    min-width: 90px;
+    margin: 4px 0 4px 0;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.13s, box-shadow 0.13s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    outline: none;
+    white-space: pre-line;
+}
+
+.submood-btn:hover {
+    transform: scale(1.07);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
 
 /* 노트 스타일 */
 .note {
     padding: 15px;
-    margin: 15px 0;
-    background-color: #fff;
+    margin: 15px 0 0 0;
+    background: #f8fafc;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: background 0.2s, transform 0.2s;
+    text-align: center;
 }
 
 .note:hover {
-    transform: translateY(-3px);
-    background-color: #f9f9f9;
+    background: #eaf6ff;
+    transform: translateY(-2px);
 }
 
 .note a {
     text-decoration: none;
-    color: #333;
-    font-weight: bold;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+.note a:hover {
+    color: #0056b3;
 }
 
 /* 채팅 박스 */
+.section.chat-section {
+    max-width: 340px;
+    min-width: 220px;
+    flex: 1 1 0;
+    padding: 18px 8px;
+}
+
 .chat-box {
     width: 100%;
-    height: 400px;
-    background-color: white;
+    min-height: 260px;
+    max-width: 320px;
+    background: #f7fafd;
     border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
     font-size: 18px;
     font-weight: 500;
     color: #555;
+    border: 1.5px solid #e3eaf5;
+    padding: 10px 6px 10px 6px;
+    box-sizing: border-box;
+    /* 채팅 박스가 부모 영역을 벗어나지 않도록 */
+    overflow: hidden;
+    margin: 0 auto;
 }
 
-/* 캘린더 컨트롤 버튼 스타일 */
-.calendar-controls {
+.messages {
     display: flex;
-    align-items: center;
-    justify-content: center; /* 가운데 정렬 */
-    gap: 15px;
-    margin-bottom: 15px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 8px;
+    background: #e6f3ff;
+    border-radius: 8px;
+    max-height: 320px;
+    min-height: 120px;
+    overflow-y: auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
 
-#current-month {
-    font-size: 18px;
-    font-weight: bold;
-    min-width: 120px; /* 고정된 너비를 설정하여 일관된 배치 유지 */
-    text-align: center;
+.message {
+    max-width: 80%;
+    padding: 10px 16px;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.5;
+    word-break: break-word;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 2px;
+    display: inline-block;
+}
+
+.message.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #229ED9 60%, #5bc0eb 100%);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.message.bot {
+    align-self: flex-start;
+    background: #fff;
+    color: #229ED9;
+    border-bottom-left-radius: 4px;
+    border: 1.5px solid #b6c6e3;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.input-area input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1.5px solid #b6c6e3;
+    font-size: 16px;
+    background: #f8fafc;
+    transition: border 0.2s;
+}
+
+.input-area input:focus {
+    border: 1.5px solid #007bff;
+    outline: none;
+}
+
+.input-area button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.input-area button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+.logout-section {
+    position: absolute;
+    top: 24px;
+    right: 32px;
 }
 
 .stylish-btn {
-    background-color: #007bff;
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #007bff 60%, #5bc0eb 100%);
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 15px;
-    cursor: pointer;
     font-size: 18px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
 .stylish-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.1);
+    background: linear-gradient(90deg, #0056b3 60%, #3a8dde 100%);
+    transform: scale(1.08);
 }
+
+#send-all-button {
+    margin-top: 18px;
+    padding: 14px 0;
+    background: linear-gradient(90deg, #28a745 60%, #6ee7b7 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+#send-all-button:hover {
+    background: linear-gradient(90deg, #218838 60%, #34d399 100%);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+#send-all-button:active {
+    transform: translateY(0) scale(1.0);
+}
+
 /* Journaling Section */
 .journaling {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: rgba(255,255,255,0.98);
+    border-radius: 16px;
+    padding: 36px 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     max-width: 600px;
     margin: 0 auto;
-    transition: transform 0.2s ease-in-out;
+    transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .journaling:hover {
-    transform: scale(1.02);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+    transform: scale(1.01);
+}
+
+h1, h2 {
+    font-family: 'Inter', 'Noto Sans KR', Arial, sans-serif;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
 }
 
 h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center;
+    font-size: 26px;
+    margin-bottom: 22px;
 }
 
 /* Form Styles */
 form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
 }
 
 label {
     font-size: 16px;
     font-weight: 500;
     color: #444;
+    margin-bottom: 4px;
+    text-align: left;
 }
 
 textarea, input[type="date"] {
     padding: 12px;
-    border: 2px solid #ddd;
+    border: 2px solid #e3eaf5;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 400;
     color: #333;
-    background-color: #fafafa;
-    transition: border-color 0.3s ease;
+    background: #f8fafc;
+    transition: border 0.2s;
 }
 
 textarea {
@@ -240,106 +507,120 @@ textarea {
 }
 
 textarea:focus, input[type="date"]:focus {
-    border-color: #007bff;
+    border: 2px solid #007bff;
     outline: none;
 }
 
 /* Submit Button */
-button {
-    padding: 12px 20px;
-    background-color: #007bff;
+button[type="submit"] {
+    padding: 12px 0;
+    background: linear-gradient(90deg, #007bff 60%, #5bc0eb 100%);
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
-button:hover {
-    background-color: #0056b3;
+button[type="submit"]:hover {
+    background: linear-gradient(90deg, #0056b3 60%, #3a8dde 100%);
     transform: scale(1.05);
 }
 
-/* View all notes link */
-.note {
-    text-align: center;
-    margin-top: 20px;
+@media (max-width: 1600px) {
+    .container.three-column-layout {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 24px;
+        max-width: 98vw;
+    }
+    .section.mood-tracker, .section.journaling, .section.chat-section {
+        max-width: 98vw;
+        min-width: 0;
+    }
 }
 
-.note a {
-    color: #007bff;
-    font-size: 16px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.3s ease;
+@media (max-width: 1200px) {
+    .container.three-column-layout {
+        flex-direction: column;
+        height: auto;
+        max-width: 98vw;
+    }
 }
 
-.note a:hover {
-    color: #0056b3;
+@media (max-width: 1100px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        padding: 24px 2vw;
+        gap: 24px;
+    }
+
+    .section {
+        margin: 0 0 18px 0;
+    }
 }
 
-.chat-box {
-    border: 1px solid #ccc;
-    padding: 10px;
-    height: 300px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.messages {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
-.input-area {
-    display: flex;
-}
-.input-area input {
-    flex-grow: 1;
-    padding: 5px;
-}
-.input-area button {
-    padding: 5px 10px;
-}
-.logout-section {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+@media (max-width: 700px) {
+    .container {
+        padding: 10px 0;
+    }
+
+    .section {
+        padding: 18px 6px;
+    }
+
+    .journaling {
+        padding: 18px 6px;
+    }
+
+    .chat-box {
+        padding: 10px 4px;
+    }
+
+    .calendar-day {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+
+    #submood-buttons-container {
+        max-width: 98vw;
+        gap: 6px 4px;
+    }
+
+    .submood-btn {
+        min-width: 70px;
+        font-size: 13px;
+    }
+
+    .calendar-responsive-wrapper {
+        max-width: 99vw;
+        padding: 4px 0 4px 0;
 }
 
-.stylish-btn {
-    padding: 8px 16px;
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    .calendar-weekdays {
+        font-size: 14px;
+    }
+
+    .mood-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .input-area input {
+        font-size: 14px;
+    }
+
+    .input-area button {
+        font-size: 14px;
+    }
+
+    button[type="submit"] {
+        font-size: 15px;
+    }
 }
 
-.stylish-btn:hover {
-    background-color: #cc0000;
-}
-#send-all-button {
-    margin-top: 15px;
-    padding: 12px 25px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-#send-all-button:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#send-all-button:active {
-    transform: translateY(0);
-}

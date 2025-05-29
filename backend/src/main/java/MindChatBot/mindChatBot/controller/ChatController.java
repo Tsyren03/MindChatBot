@@ -69,7 +69,8 @@ public class ChatController {
         String userId = requestBody.getOrDefault("userId", "anonymous");
         StringBuilder messageBuilder = new StringBuilder();
 
-        Map<String, Double> moodStats = moodService.getMoodStatistics(userId);
+        Map<String, Object> stats = moodService.getMoodStatistics(userId);
+        Map<String, Double> moodStats = (Map<String, Double>) stats.get("mainMoodStats");
 
         if (moodStats.isEmpty() || moodStats.values().stream().allMatch(v -> v == 0.0)) {
             messageBuilder.append("No mood statistics recorded in the last 30 days. Would you like to share how you're feeling now?");

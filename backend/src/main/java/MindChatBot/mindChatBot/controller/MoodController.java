@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/user/moods")
@@ -36,15 +37,15 @@ public class MoodController {
     }
 
     @PostMapping("/save")
-    public Mood saveMood(@RequestBody Mood mood) {
+    public Mono<Map<String, Object>> saveMood(@RequestBody Mood mood) {
         String userId = getCurrentUserId();
-        return moodService.saveMood(userId, mood);
+        return moodService.saveMoodWithReply(userId, mood);
     }
 
     @GetMapping("/stats")
-    public Map<String, Double> getMoodStats() {  // Changed to return Map<String, Double>
+    public Map<String, Object> getMoodStats() {
         String userId = getCurrentUserId();
-        return moodService.getMoodStatistics(userId);  // Return mood statistics as percentages
+        return moodService.getMoodStatistics(userId);
     }
 
     private String getCurrentUserId() {

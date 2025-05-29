@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - MindChatBot</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="container">
+    <section class="section" style="max-width: 600px; margin: 0 auto;">
+        <h2>Profile Information</h2>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 18px;">
+            <img src="/static/profile-default.png" alt="Profile Picture" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); object-fit: cover;">
+            <div style="width: 100%;">
+                <p style="font-size: 1.2em; font-weight: 600; margin: 8px 0;">Name: <span id="profile-name">User Name</span></p>
+                <p style="font-size: 1.1em; margin: 8px 0;">Email: <span id="profile-email">user@email.com</span></p>
+                <p style="font-size: 1.1em; margin: 8px 0;">Joined: <span id="profile-joined">2025-01-01</span></p>
+            </div>
+        </div>
+        <div style="margin-top: 24px;">
+            <a href="/index.html" class="stylish-btn">Go to Main</a>
+        </div>
+    </section>
+</div>
+<script>
+// 예시: 실제로는 서버에서 사용자 정보를 받아와서 채워야 함
+// 아래는 데모용
+window.addEventListener('DOMContentLoaded', function() {
+    // 예시 데이터
+    const profile = {
+        name: '홍길동',
+        email: 'honggildong@example.com',
+        joined: '2025-01-01'
+    };
+    document.getElementById('profile-name').textContent = profile.name;
+    document.getElementById('profile-email').textContent = profile.email;
+    document.getElementById('profile-joined').textContent = profile.joined;
+});
+</script>
+</body>
+</html>
+

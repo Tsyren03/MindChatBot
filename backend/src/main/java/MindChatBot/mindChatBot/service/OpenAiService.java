@@ -13,6 +13,7 @@ import java.util.*;
 @Service
 public class OpenAiService {
 
+
     private final WebClient webClient;
     private final ChatLogRepository chatLogRepository;
 
@@ -22,18 +23,30 @@ public class OpenAiService {
     @Value("${openai.model:gpt-4.1-nano}")
     private String model;
 
-    @Value("${openai.system.prompt:You are a helpful and empathetic mental health assistant.}")
+    @Value("${openai.system.prompt}")
     private String systemPrompt;
 
     public OpenAiService(WebClient.Builder webClientBuilder, ChatLogRepository chatLogRepository) {
         this.webClient = webClientBuilder.baseUrl("https://api.openai.com/v1").build();
         this.chatLogRepository = chatLogRepository;
     }
+
     public Mono<String> sendMessageToOpenAI(List<ChatLog> history, String message, String userId) {
         List<Map<String, String>> messages = new ArrayList<>();
 
-        // 시스템 프롬프트를 system role로 추가
-        messages.add(Map.of("role", "system", "content", systemPrompt));
+        // 사용자 이름 추출 (이메일에서 @ 앞부분, 또는 userId가 이름이면 이름으로)
+        String userName = null;
+        if (userId != null && !userId.equals("anonymous")) {
+            if (userId.contains("@")) {
+                userName = userId.substring(0, userId.indexOf("@"));
+            } else {
+                userName = userId;
+            }
+        }
+
+        // application.yml에서 systemPrompt를 읽어와 사용
+        String personalizedPrompt = systemPrompt;
+        messages.add(Map.of("role", "system", "content", personalizedPrompt));
 
         // 기존 히스토리 추가
         for (ChatLog chat : history) {
@@ -48,13 +61,17 @@ public class OpenAiService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", model);
         requestBody.put("messages", messages);
+        // 사용자 이름을 알면 user_name으로 전달 (OpenAI API는 system prompt에서만 사용)
+        if (userName != null) {
+            requestBody.put("user", userName);
+        }
 
         return webClient.post()
                 .uri("/chat/completions")
                 .header("Authorization", "Bearer " + openaiApiKey)
                 .bodyValue(requestBody)
                 .retrieve()
-                .bodyToMono(Map.class) // JSON 전체를 Map으로 파싱
+                .bodyToMono(Map.class)
                 .flatMap(responseMap -> {
                     try {
                         List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");

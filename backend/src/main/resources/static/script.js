@@ -56,6 +56,11 @@ document.addEventListener("DOMContentLoaded", function () {
         return response.json();
     }
 
+    function clearSubMoodUI() {
+        const container = document.getElementById("submood-buttons-container");
+        if (container) container.style.display = 'none';
+    }
+
     async function updateCalendar() {
         calendar.innerHTML = "";
         currentMonthElement.textContent = new Date(currentYear, currentMonth)
@@ -82,17 +87,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const mood = savedMoods.find(m => m.day === day);
             if (mood) {
-                const colorMap = {
-                    bad: '#ff4d4d',
-                    poor: '#ffa500',
-                    neutral: '#d3d3d3',
-                    good: '#90ee90',
-                    best: '#32cd32'
-                };
-                dayElement.style.backgroundColor = colorMap[mood.emoji] || '';
+                let color = '';
+                if (mood.emoji && mood.subMood) {
+                    const submoods = MOOD_MAP[mood.emoji];
+                    const colors = SUBMOOD_COLOR[mood.emoji];
+                    const idx = submoods ? submoods.indexOf(mood.subMood) : -1;
+                    if (colors && idx >= 0) color = colors[idx];
+                }
+                if (!color && mood.emoji) {
+                    const colorMap = {
+                        bad: '#ff4d4d',
+                        poor: '#ffa500',
+                        neutral: '#d3d3d3',
+                        good: '#90ee90',
+                        best: '#32cd32'
+                    };
+                    color = colorMap[mood.emoji] || '';
+                }
+                dayElement.style.backgroundColor = color;
+                dayElement.title = mood.emoji + (mood.subMood ? (': ' + mood.subMood) : '');
             }
 
-            dayElement.addEventListener("click", () => selectDay(dayElement));
+            dayElement.addEventListener("click", () => {
+                selectDay(dayElement);
+                clearSubMoodUI();
+            });
             calendar.appendChild(dayElement);
         }
     }
@@ -101,16 +120,27 @@ document.addEventListener("DOMContentLoaded", function () {
         currentMonth--;
         if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         updateCalendar();
+        clearSubMoodUI();
     });
 
     nextMonthButton?.addEventListener("click", () => {
         currentMonth++;
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         updateCalendar();
+        clearSubMoodUI();
     });
 
     currentDateElement.textContent = `Today: ${new Date().toDateString()}`;
     updateCalendar();
+
+    // === 6. Send All Logs and Moods Button ===
+    const sendAllButton = document.getElementById("send-all-button");
+    if (sendAllButton) {
+        sendAllButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            sendAllLogsAndMoods();
+        });
+    }
 });
 
 // === 3. Select Day ===
@@ -130,27 +160,101 @@ function selectDay(dayElement) {
     }
 }
 
-// === 4. Set Mood ===
-async function setMood(moodValue) {
+// === SubMood Map ===
+const MOOD_MAP = {
+    best: ["proud", "grateful", "energetic", "excited", "fulfilled"],
+    good: ["calm", "productive", "hopeful", "motivated", "friendly"],
+    neutral: ["indifferent", "blank", "tired", "bored", "quiet"],
+    poor: ["frustrated", "overwhelmed", "nervous", "insecure", "confused"],
+    bad: ["angry", "sad", "lonely", "anxious", "hopeless"]
+};
+
+const SUBMOOD_COLOR = {
+    best: [
+        "#00e6d0", // 밝은 청록
+        "#00cfff", // 밝은 하늘색
+        "#7ee787", // 밝은 연두
+        "#ffe066", // 밝은 노랑
+        "#ffb3ff"  // 밝은 핑크
+    ],
+    good: [
+        "#a7ffeb", // 밝은 민트
+        "#b2f7ef", // 밝은 하늘민트
+        "#f6d365", // 밝은 노랑
+        "#fda085", // 밝은 오렌지
+        "#ffd6e0"  // 밝은 핑크
+    ],
+    neutral: ["#d1d5db", "#e5e7eb", "#f3f4f6", "#9ca3af", "#6b7280"],
+    poor: ["#fca5a5", "#f87171", "#fbbf24", "#f59e42", "#f87171"],
+    bad: ["#f87171", "#ef4444", "#dc2626", "#b91c1c", "#991b1b"]
+};
+
+window.showSubMoodButtons = function(mainMood) {
+    const container = document.getElementById("submood-buttons-container");
+    if (!container) return;
+    container.innerHTML = '';
+    const submoods = MOOD_MAP[mainMood];
+    const colors = SUBMOOD_COLOR[mainMood];
+    submoods.forEach((subMood, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'submood-btn';
+        btn.textContent = subMood.charAt(0).toUpperCase() + subMood.slice(1);
+        btn.style.background = colors[idx] || '#e5e7eb';
+        btn.style.color = '#222';
+        btn.style.margin = '0 8px 8px 0';
+        btn.style.padding = '10px 18px';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '8px';
+        btn.style.fontWeight = '600';
+        btn.style.fontSize = '15px';
+        btn.style.cursor = 'pointer';
+        btn.onclick = function() { saveMoodWithSubMoodLive(mainMood, subMood); };
+        container.appendChild(btn);
+    });
+    container.style.display = 'flex';
+    container.style.flexWrap = 'wrap';
+    container.style.justifyContent = 'center';
+};
+
+async function saveMoodWithSubMoodLive(emoji, subMood) {
     const selectedDayElement = document.querySelector(".calendar-day.selected");
     if (!selectedDayElement) {
-        alert("Please select a date first!");
+        alert("Please select a date first.");
         return;
     }
-
     const { token } = getUserIdFromToken();
     const day = selectedDayElement.dataset.day;
     const year = parseInt(document.getElementById("current-month").dataset.year);
     const month = parseInt(document.getElementById("current-month").dataset.month);
-
     const mood = {
         year,
         month: month + 1,
         day: parseInt(day),
-        emoji: moodValue
+        emoji,
+        subMood
     };
-
-    await fetch('/user/moods/save', {
+    // 즉시 submood 색상 반영
+    let color = '';
+    if (emoji && subMood) {
+        const submoods = MOOD_MAP[emoji];
+        const colors = SUBMOOD_COLOR[emoji];
+        const idx = submoods ? submoods.indexOf(subMood) : -1;
+        if (colors && idx >= 0) color = colors[idx];
+    }
+    if (!color && emoji) {
+        const colorMap = {
+            bad: '#ff4d4d',
+            poor: '#ffa500',
+            neutral: '#d3d3d3',
+            good: '#90ee90',
+            best: '#32cd32'
+        };
+        color = colorMap[emoji] || '';
+    }
+    selectedDayElement.style.backgroundColor = color;
+    selectedDayElement.title = emoji + (subMood ? (': ' + subMood) : '');
+    // 서버 저장
+    const response = await fetch('/user/moods/save', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -159,14 +263,19 @@ async function setMood(moodValue) {
         body: JSON.stringify(mood)
     });
 
-    const colorMap = {
-        bad: '#ff4d4d',
-        poor: '#ffa500',
-        neutral: '#d3d3d3',
-        good: '#90ee90',
-        best: '#32cd32'
-    };
-    selectedDayElement.style.backgroundColor = colorMap[moodValue] || '';
+    if (response.ok) {
+        const replyData = await response.json();
+        const replyText = replyData.reply || "Your mood has been saved.";
+
+        const chatReplyEl = document.getElementById("chat-reply");
+        if (chatReplyEl) {
+            chatReplyEl.textContent = replyText;
+        }
+        // 챗봇 박스에 바로 출력
+        addMessage("bot", replyText);
+    } else {
+        alert("Failed to save mood.");
+    }
 }
 
 // === 5. Chat Message Handling ===
@@ -221,14 +330,16 @@ function addMessage(sender, text) {
     const messagesDiv = document.getElementById("messages");
     const messageElement = document.createElement("div");
     messageElement.classList.add("message", sender);
-    messageElement.textContent = `${sender === "user" ? "You" : "Bot"}: ${text}`;
+    // 텔레그램 스타일: 말풍선에서 닉네임 없이 메시지만 표시
+    messageElement.textContent = text;
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
+
+// === 6. Send All Logs and Moods ===
 async function sendAllLogsAndMoods() {
     try {
-        // Remove the authentication check
-        const userId = "Xizel.03@gmail.com"; // Assuming anonymous user if no login is required
+        const userId = "Xizel.03@gmail.com"; // default or test user
 
         addMessage("bot", "🔄 Analyzing mood patterns and journal entries...");
 
@@ -252,12 +363,4 @@ async function sendAllLogsAndMoods() {
         addMessage("bot", "⚠️ Failed to analyze data: " + error.message);
     }
 }
-document.addEventListener("DOMContentLoaded", function () {
-    const sendAllButton = document.getElementById("send-all-button");
-    if (sendAllButton) {
-        sendAllButton.addEventListener("click", function (e) {
-            e.preventDefault();
-            sendAllLogsAndMoods();
-        });
-    }
-});
+

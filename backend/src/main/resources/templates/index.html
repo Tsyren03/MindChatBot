@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
     <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
@@ -17,7 +17,7 @@
         </form>
     </div>
 
-    <main class="container">
+        <main class="container three-column-layout">
         <!-- Mood Tracker Section -->
         <section class="section mood-tracker">
             <h2>Mood Tracker</h2>
@@ -27,27 +27,30 @@
                 <span id="current-month">March 2025</span>
                 <button class="stylish-btn" id="next-month" aria-label="Next Month">▶</button>
             </div>
-            <div class="calendar">
-                <div class="calendar-weekdays">
-                    <span>Mon</span>
-                    <span>Tue</span>
-                    <span>Wed</span>
-                    <span>Thu</span>
-                    <span>Fri</span>
-                    <span>Sat</span>
-                    <span class="sunday">Sun</span>
+            <div class="calendar-responsive-wrapper">
+                <div class="calendar">
+                    <div class="calendar-weekdays">
+                        <span>Mon</span>
+                        <span>Tue</span>
+                        <span>Wed</span>
+                        <span>Thu</span>
+                        <span>Fri</span>
+                        <span>Sat</span>
+                        <span class="sunday">Sun</span>
+                    </div>
+                    <div id="calendar"></div>
                 </div>
-                <div id="calendar"></div>
             </div>
-            <div class="emotion-buttons">
-                <button class="mood-btn bad" onclick="setMood('bad')" aria-label="Bad Mood">😞 Bad</button>
-                <button class="mood-btn poor" onclick="setMood('poor')" aria-label="Poor Mood">😕 Poor</button>
-                <button class="mood-btn neutral" onclick="setMood('neutral')" aria-label="Neutral Mood">😐 Neutral</button>
-                <button class="mood-btn good" onclick="setMood('good')" aria-label="Good Mood">🙂 Good</button>
-                <button class="mood-btn best" onclick="setMood('best')" aria-label="Best Mood">😃 Best</button>
+            <div class="emotion-buttons one-row">
+                <button class="mood-btn bad" onclick="showSubMoodButtons('bad')" aria-label="Bad Mood">😞 Bad</button>
+                <button class="mood-btn poor" onclick="showSubMoodButtons('poor')" aria-label="Poor Mood">😕 Poor</button>
+                <button class="mood-btn neutral" onclick="showSubMoodButtons('neutral')" aria-label="Neutral Mood">😐 Neutral</button>
+                <button class="mood-btn good" onclick="showSubMoodButtons('good')" aria-label="Good Mood">🙂 Good</button>
+                <button class="mood-btn best" onclick="showSubMoodButtons('best')" aria-label="Best Mood">😃 Best</button>
             </div>
-            <div class="note">
-                <a href="/statistics.html" class="stats-link">📊 View Mood Statistics</a>
+            <div id="submood-buttons-container" style="display:none; margin-top:12px;"></div>
+            <div class="note" style="margin-top:18px;">
+                <a href="/statistics.html" class="stylish-btn" style="margin-top:10px;display:inline-block;">📊 View Mood Statistics</a>
             </div>
         </section>
 
@@ -69,13 +72,14 @@
         <!-- Chat Box Section -->
         <section class="section chat-section">
             <h2>Mind Chat Bot</h2>
+            <div class="chat-greeting" style="margin-bottom:12px; color:#229ED9; font-size:17px; font-weight:500;">👋 Welcome! Start chatting with your AI friend.</div>
             <div class="chat-box" id="chat-box">
                 <div class="messages" id="messages"></div>
                 <div class="input-area" style="display: flex; gap: 10px; width: 100%; margin-top: 10px;">
-                    <input type="text" id="user-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                    <button onclick="sendMessage()" style="padding: 10px 20px; border: none; border-radius: 5px; background-color: #007bff; color: #fff;">Send</button>
+                    <input type="text" id="user-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border-radius: 20px; border: 1.5px solid #b6c6e3; background:#f8fafc;">
+                    <button onclick="sendMessage()" style="padding: 10px 22px; border: none; border-radius: 20px; background-color: #229ED9; color: #fff; font-weight:600;">Send</button>
                 </div>
-                <button id="send-all-button">Send All Logs and Moods</button>
+                <button id="send-all-button" style="background:linear-gradient(90deg,#229ED9 60%,#5bc0eb 100%);margin-top:10px;">Send All Logs and Moods</button>
             </div>
         </section>
     </main>
@@ -83,3 +87,4 @@
     <script th:src="@{/script.js}"></script>
     </body>
     </html>
+

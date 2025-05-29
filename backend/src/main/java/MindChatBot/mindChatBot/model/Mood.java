@@ -15,6 +15,8 @@ public class Mood {
     private int month;
     private int day;
     private String emoji;
+    private String subMood;
+
 
     // Lombok will generate the getters, setters, toString, equals, and hashCode methods
 }
