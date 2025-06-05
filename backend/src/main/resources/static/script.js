@@ -133,15 +133,6 @@ document.addEventListener("DOMContentLoaded", function () {
     currentDateElement.textContent = `Today: ${new Date().toDateString()}`;
     updateCalendar();
 
-    // === 6. Send All Logs and Moods Button ===
-    const sendAllButton = document.getElementById("send-all-button");
-    if (sendAllButton) {
-        sendAllButton.addEventListener("click", function (e) {
-            e.preventDefault();
-            sendAllLogsAndMoods();
-        });
-    }
-
     // === 7. Load last 5 chat messages on page load and on first open ===
     loadLastChatMessages();
 
@@ -452,45 +443,12 @@ function addMessage(sender, text) {
     messageElement.textContent = text;
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    saveMessageToLocal(sender, text);
-}
-
-function saveMessageToLocal(sender, text) {
-    let arr = [];
-    try {
-        arr = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-    } catch {}
-    arr.push({ sender, text });
-    if (arr.length > 5) arr = arr.slice(arr.length - 5);
-    localStorage.setItem('chatHistory', JSON.stringify(arr));
-}
-
-// === 6. Send All Logs and Moods ===
-async function sendAllLogsAndMoods() {
-    try {
-        const userId = "Xizel.03@gmail.com"; // default or test user
-
-        addMessage("bot", "🔄 Analyzing mood patterns and journal entries...");
-
-        const response = await fetch("/api/chat/sendAllData", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ userId })
-        });
-
-        const result = await response.json();
-
-        if (result.response) {
-            addMessage("bot", result.response);
-        } else {
-            addMessage("bot", "⚠️ Error: " + (result.error || "No insights could be generated"));
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        addMessage("bot", "⚠️ Failed to analyze data: " + error.message);
-    }
+    // === localStorage에 메시지 저장 (사용자별로 분리) ===
+    const { userId } = getUserIdFromToken();
+    const key = `chatMessages_${userId}`;
+    let messages = JSON.parse(localStorage.getItem(key) || "[]");
+    messages.push({ sender, text });
+    localStorage.setItem(key, JSON.stringify(messages));
 }
 
 // === 캘린더 셀 색상 즉시 변경 함수 ===
@@ -529,47 +487,27 @@ function updateCalendarCellColor(year, month, day, emoji, subMood) {
 
 // === Load last 5 chat messages from localStorage (fallback if no backend) ===
 function loadLastChatMessages() {
-    // 1. Try backend API first
-    const { userId, token } = getUserIdFromToken();
-    fetch('/api/chat/history?limit=5', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token && { "Authorization": `Bearer ${token}` })
-        }
-    })
-    .then(res => {
-        if (res.ok) return res.json();
-        throw new Error('No backend');
-    })
-    .then(messages => {
-        if (Array.isArray(messages) && messages.length > 0) {
-            const messagesDiv = document.getElementById("messages");
-            messagesDiv.innerHTML = '';
-            messages.forEach(msg => {
-                if (msg.sender && msg.text) {
-                    addMessage(msg.sender, msg.text);
-                }
-            });
-        } else {
-            loadLastChatMessagesFromLocal();
-        }
-    })
-    .catch(() => {
-        loadLastChatMessagesFromLocal();
+    const messagesDiv = document.getElementById("messages");
+    if (messagesDiv) messagesDiv.innerHTML = '';
+    // === localStorage에서 메시지 불러오기 (사용자별로 분리) ===
+    const { userId } = getUserIdFromToken();
+    const key = `chatMessages_${userId}`;
+    let messages = JSON.parse(localStorage.getItem(key) || "[]");
+    messages.slice(-5).forEach(msg => {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", msg.sender);
+        messageElement.textContent = msg.text;
+        messagesDiv.appendChild(messageElement);
     });
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 function loadLastChatMessagesFromLocal() {
-    let arr = [];
-    try {
-        arr = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-    } catch {}
     const messagesDiv = document.getElementById("messages");
-    messagesDiv.innerHTML = '';
-    arr.forEach(msg => {
-        if (msg.sender && msg.text) {
-            addMessage(msg.sender, msg.text);
-        }
-    });
+    if (messagesDiv) messagesDiv.innerHTML = '';
 }
+
+// 로그인한 사용자 이메일을 전역에 저장
+fetch('/user/profile').then(res => res.json()).then(profile => {
+    window.currentUserEmail = profile.email;
+});

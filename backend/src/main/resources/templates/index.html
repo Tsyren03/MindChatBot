@@ -7,16 +7,6 @@
         <link rel="stylesheet" th:href="@{/styles.css}">
     </head>
     <body>
-    <h1>
-        <small style="font-size: 0.6em;">Welcome,</small><br>
-        <span style="font-size: 1.5em; font-weight: bold;" th:text="${email}">User</span>
-    </h1>
-    <div class="logout-section">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="stylish-btn">Logout</button>
-        </form>
-    </div>
-
         <main class="container three-column-layout">
         <!-- Mood Tracker Section -->
         <section class="section mood-tracker">
@@ -79,7 +69,12 @@
                     <input type="text" id="user-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border-radius: 20px; border: 1.5px solid #b6c6e3; background:#f8fafc;">
                     <button onclick="sendMessage()" style="padding: 10px 22px; border: none; border-radius: 20px; background-color: #229ED9; color: #fff; font-weight:600;">Send</button>
                 </div>
-                <button id="send-all-button" style="background:linear-gradient(90deg,#229ED9 60%,#5bc0eb 100%);margin-top:10px;">Send All Logs and Moods</button>
+                <div class="chat-actions" style="margin-top:18px; display:flex; gap:10px;">
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="stylish-btn">Logout</button>
+                    </form>
+                    <a href="/home.html" class="stylish-btn">My Profile</a>
+                </div>
             </div>
         </section>
     </main>

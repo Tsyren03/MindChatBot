@@ -7,17 +7,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RequiredArgsConstructor
 @Controller
-public class UserViewController {
-
+public class ViewController {
     private final UserService userService;
+
+    @GetMapping({"/index", "/user", "/user/index"})
+    public String mainPage() {
+        return "index";
+    }
+
+    @GetMapping("/index.html")
+    public String redirectIndexHtml() {
+        return "redirect:/index";
+    }
 
     @GetMapping("/login")
     public String login() {
-        return "login"; // templates/login.html
+        return "login";
     }
 
     @GetMapping("/signup")
     public String signup() {
-        return "signup"; // templates/signup.html
+        return "signup";
+    }
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
     }
 }
+

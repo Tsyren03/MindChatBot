@@ -223,7 +223,7 @@ body {
     transform: scale(1.08);
 }
 
-/* Submood 버튼 스타일 (script.js에서 인라인 스타일 제거됨) */
+/* Submood 버튼 ���타일 (script.js에서 인라인 스타일 제거됨) */
 .submood-btn {
     min-width: 90px;
     margin: 4px 8px 8px 0;
@@ -379,18 +379,20 @@ body {
 .input-area button {
     padding: 10px 20px;
     border-radius: 6px;
-    background: #007bff;
+    background: linear-gradient(90deg, #6a8cff 60%, #4fd1c5 100%);
     color: #fff;
     border: none;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
 .input-area button:hover {
-    background: #0056b3;
-    transform: scale(1.05);
+    background: linear-gradient(90deg, #4a69bd 60%, #38b2ac 100%);
+    color: #fff;
+    transform: scale(1.06);
 }
 
 .logout-section {
@@ -401,7 +403,7 @@ body {
 
 .stylish-btn {
     padding: 10px 20px;
-    background: linear-gradient(90deg, #007bff 60%, #5bc0eb 100%);
+    background: linear-gradient(90deg, #6a8cff 60%, #4fd1c5 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -413,8 +415,8 @@ body {
 }
 
 .stylish-btn:hover {
-    background: linear-gradient(90deg, #0056b3 60%, #3a8dde 100%);
-    transform: scale(1.08);
+    background: linear-gradient(90deg, #4a69bd 60%, #38b2ac 100%);
+    transform: scale(1.06);
 }
 
 #send-all-button {
@@ -510,7 +512,7 @@ textarea:focus, input[type="date"]:focus {
 /* Submit Button */
 button[type="submit"] {
     padding: 12px 0;
-    background: linear-gradient(90deg, #007bff 60%, #5bc0eb 100%);
+    background: linear-gradient(90deg, #6a8cff 60%, #4fd1c5 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -522,8 +524,8 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background: linear-gradient(90deg, #0056b3 60%, #3a8dde 100%);
-    transform: scale(1.05);
+    background: linear-gradient(90deg, #4a69bd 60%, #38b2ac 100%);
+    transform: scale(1.06);
 }
 
 @media (max-width: 1600px) {

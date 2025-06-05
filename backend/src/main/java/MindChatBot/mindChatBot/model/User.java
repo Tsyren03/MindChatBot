@@ -36,6 +36,17 @@ public class User implements UserDetails {
     @Builder.Default
     private List<String> roles = List.of("USER");  // 기본 역할을 USER로 설정
 
+    // 가입일 반환 (createdAt 필드가 없으면 null)
+    private java.time.LocalDateTime createdAt;
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    // 이름 반환 (username 필드가 name 역할)
+    public String getName() {
+        return username;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 역할에 ROLE_ 접두어 추가하여 권한을 변환
