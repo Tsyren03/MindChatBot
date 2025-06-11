@@ -171,16 +171,16 @@ const MOOD_COLOR_MAP = {
     best: {
         proud:  "#00e6d0",
         grateful: "#00cfff",
-        energetic: "#7ee787",
-        excited: "#ffe066",
+        energetic: "#0720fa",
+        excited: "#b907fa",
         fulfilled: "#ffb3ff"
     },
     good: {
-        calm: "#a7ffeb",
-        productive: "#b2f7ef",
-        hopeful: "#f6d365",
-        motivated: "#fda085",
-        friendly: "#ffd6e0"
+        calm: "#85fa07",
+        productive: "#85fa07",
+        hopeful: "#24fa07",
+        motivated: "#07fa38",
+        friendly: "#07fa85"
     },
     neutral: {
         indifferent: "#d1d5db",
@@ -190,11 +190,11 @@ const MOOD_COLOR_MAP = {
         quiet: "#6b7280"
     },
     poor: {
-        frustrated: "#fca5a5",
-        overwhelmed: "#f87171",
-        nervous: "#fbbf24",
-        insecure: "#f59e42",
-        confused: "#f87171"
+        frustrated: "#f6faac",
+        overwhelmed: "#fafa5c",
+        nervous: "#fcdf00",
+        insecure: "#ffcd57",
+        confused: "#ffae57"
     },
     bad: {
         angry: "#f87171",

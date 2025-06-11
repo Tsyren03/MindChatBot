@@ -15,7 +15,7 @@
             min-height: 100vh;
         }
         .container {
-            width: 80%;
+            width: 90%;
             max-width: 1000px;
             margin: 40px auto;
             padding: 30px;
@@ -34,21 +34,30 @@
         }
         .chart-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             width: 100%;
             margin-top: 20px;
+            gap: 24px;
         }
         canvas {
             width: 100% !important;
             max-width: 600px;
             height: 400px;
+            min-width: 220px;
             margin-top: 20px;
             background: #f8fafc;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        @media (max-width: 900px) {
+        #subMoodChartsContainer > div {
+            width: 220px;
+            min-width: 160px;
+            max-width: 100vw;
+            margin: 0 8px 24px 8px;
+        }
+        @media (max-width: 1200px) {
             .container {
                 width: 98%;
                 padding: 18px 6px;
@@ -59,6 +68,46 @@
             canvas {
                 height: 300px;
             }
+            #subMoodChartsContainer > div {
+                width: 180px;
+            }
+        }
+        @media (max-width: 900px) {
+            .container {
+                width: 99vw;
+                padding: 8px 2vw;
+            }
+            .chart-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+            canvas {
+                max-width: 98vw;
+                height: 220px;
+            }
+            #subMoodChartsContainer > div {
+                width: 98vw;
+                min-width: 120px;
+                margin: 0 0 18px 0;
+            }
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 100vw;
+                padding: 2vw 0;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+            canvas {
+                max-width: 99vw;
+                height: 140px;
+            }
+            #subMoodChartsContainer > div {
+                width: 99vw;
+                min-width: 80px;
+                margin: 0 0 12px 0;
+            }
         }
     </style>
 </head>
@@ -68,16 +117,13 @@
     <div class="chart-container">
         <canvas id="moodChart"></canvas>
     </div>
-    <div class="chart-container">
-        <canvas id="subMoodChart"></canvas>
-    </div>
+    <div class="chart-container" id="subMoodChartsContainer" style="flex-wrap:wrap;gap:32px;"></div>
     <div class="chart-container">
         <canvas id="moodTrendChart"></canvas>
     </div>
     <div class="chart-container">
         <canvas id="moodByHourChart"></canvas>
     </div>
-    <div class="chart-container" id="topMoodComboContainer" style="margin-top:24px;"></div>
     <div style="margin-top: 24px;">
         <a href="/index.html" class="stylish-btn" style="display:inline-block;">← Back to Main</a>
     </div>
@@ -113,57 +159,88 @@ fetch('/user/moods/stats')
                 }
             });
         }
-        // 서브무드 통계
+        // 서브무드 통계: 메인무드별 5개 파이차트
         if (data && data.subMoodStats) {
-            const subStats = data.subMoodStats;
-            const labels = Object.keys(subStats).map(k => k.replace(":", ": "));
-            const values = Object.values(subStats);
+            const subStatsRaw = data.subMoodStats;
             const subMoodColorMap = {
-                bad: ["#f87171", "#ef4444", "#dc2626", "#b91c1c", "#991b1b"],
-                poor: ["#fca5a5", "#f87171", "#fbbf24", "#f59e42", "#f87171"],
-                neutral: ["#d1d5db", "#e5e7eb", "#f3f4f6", "#9ca3af", "#6b7280"],
-                good: ["#a7ffeb", "#b2f7ef", "#f6d365", "#fda085", "#ffd6e0"],
-                best: ["#00e6d0", "#00cfff", "#7ee787", "#ffe066", "#ffb3ff"]
-            };
-            const colors = labels.map(label => {
-                const [main, sub] = label.split(":");
-                const arr = subMoodColorMap[main];
-                if (arr && sub) {
-                    // subMood 이름 인덱스 찾기
-                    const subList = ["proud","grateful","energetic","excited","fulfilled","calm","productive","hopeful","motivated","friendly","indifferent","blank","tired","bored","quiet","frustrated","overwhelmed","nervous","insecure","confused","angry","sad","lonely","anxious","hopeless"];
-                    let idx = -1;
-                    if(main==="best") idx = ["proud","grateful","energetic","excited","fulfilled"].indexOf(sub.trim());
-                    else if(main==="good") idx = ["calm","productive","hopeful","motivated","friendly"].indexOf(sub.trim());
-                    else if(main==="neutral") idx = ["indifferent","blank","tired","bored","quiet"].indexOf(sub.trim());
-                    else if(main==="poor") idx = ["frustrated","overwhelmed","nervous","insecure","confused"].indexOf(sub.trim());
-                    else if(main==="bad") idx = ["angry","sad","lonely","anxious","hopeless"].indexOf(sub.trim());
-                    if(idx>=0) return arr[idx];
-                }
-                // fallback
-                if(main && subMoodColorMap[main]) return subMoodColorMap[main][0];
-                return "#cccccc";
-            });
-            const ctx2 = document.getElementById("subMoodChart").getContext("2d");
-            new Chart(ctx2, {
-                type: "bar",
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'SubMood %',
-                        data: values,
-                        backgroundColor: colors
-                    }]
+                best: {
+                    proud:  "#00e6d0",
+                    grateful: "#00cfff",
+                    energetic: "#0720fa",
+                    excited: "#b907fa",
+                    fulfilled: "#ffb3ff"
                 },
-                options: {
-                    indexAxis: 'y',
-                    plugins: {
-                        title: { display: true, text: 'SubMood Statistics' },
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { beginAtZero: true, max: 100, title: { display: true, text: '%' } }
-                    }
+                good: {
+                    calm: "#85fa07",
+                    productive: "#85fa07",
+                    hopeful: "#24fa07",
+                    motivated: "#07fa38",
+                    friendly: "#07fa85"
+                },
+                neutral: {
+                    indifferent: "#d1d5db",
+                    blank: "#e5e7eb",
+                    tired: "#f3f4f6",
+                    bored: "#9ca3af",
+                    quiet: "#6b7280"
+                },
+                poor: {
+                    frustrated: "#f6faac",
+                    overwhelmed: "#fafa5c",
+                    nervous: "#fcdf00",
+                    insecure: "#ffcd57",
+                    confused: "#ffae57"
+                },
+                bad: {
+                    angry: "#f87171",
+                    sad: "#ef4444",
+                    lonely: "#dc2626",
+                    anxious: "#b91c1c",
+                    hopeless: "#991b1b"
                 }
+            };
+            const subMoodList = {
+                best: ["proud","grateful","energetic","excited","fulfilled"],
+                good: ["calm","productive","hopeful","motivated","friendly"],
+                neutral: ["indifferent","blank","tired","bored","quiet"],
+                poor: ["frustrated","overwhelmed","nervous","insecure","confused"],
+                bad: ["angry","sad","lonely","anxious","hopeless"]
+            };
+            const container = document.getElementById("subMoodChartsContainer");
+            container.innerHTML = '';
+            Object.keys(subMoodList).forEach(mainMood => {
+                // 각 메인무드별로 파이차트 생성
+                const submoods = subMoodList[mainMood];
+                const values = submoods.map(sub => {
+                    const key = mainMood + ":" + sub;
+                    return Math.round((subStatsRaw[key]||0)*10)/10;
+                });
+                // 전체가 0이면 차트 생략
+                if (values.reduce((a,b)=>a+b,0) === 0) return;
+                const colors = submoods.map(sub => subMoodColorMap[mainMood][sub]);
+                const chartDiv = document.createElement('div');
+                chartDiv.style.width = '220px';
+                chartDiv.style.display = 'inline-block';
+                chartDiv.style.verticalAlign = 'top';
+                chartDiv.innerHTML = `<div style='font-weight:bold;margin-bottom:6px;'>${mainMood.charAt(0).toUpperCase()+mainMood.slice(1)}</div><canvas id="subMoodPie_${mainMood}" width="200" height="200"></canvas>`;
+                container.appendChild(chartDiv);
+                const ctx = chartDiv.querySelector('canvas').getContext('2d');
+                new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: submoods.map(s=>s.charAt(0).toUpperCase()+s.slice(1)),
+                        datasets: [{
+                            data: values,
+                            backgroundColor: colors
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: { display: true, position: 'bottom' },
+                            title: { display: false }
+                        }
+                    }
+                });
             });
         }
         // 복합 통계: mood 변화 추이 (Line Chart)
@@ -210,16 +287,6 @@ fetch('/user/moods/stats')
                     scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
                 }
             });
-        }
-        // 복합 통계: mood 조합 TOP3 (표)
-        if (data && data.topMoodCombos) {
-            const container = document.getElementById('topMoodComboContainer');
-            let html = '<h3>Top 3 Mood Combos</h3><table style="margin:0 auto;"><tr><th>Combo</th><th>Count</th></tr>';
-            data.topMoodCombos.slice(0,3).forEach(item => {
-                html += `<tr><td>${item.combo}</td><td>${item.count}</td></tr>`;
-            });
-            html += '</table>';
-            container.innerHTML = html;
         }
     })
     .catch(error => {

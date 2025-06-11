@@ -29,18 +29,18 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: stretch;
-    gap: 18px;
+    gap: 24px;
     max-width: 1200px;
     margin: 0 auto;
-    height: 100vh;
     width: 100%;
+    height: 100vh;
 }
 
 /* 카드 스타일 */
 .section {
     flex: 1 1 340px;
     min-width: 320px;
-    max-width: 480px;
+    max-width: 400px;
     margin: 10px;
     padding: 32px 20px 32px 20px;
     border-radius: 18px;
@@ -53,6 +53,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 540px;
+    box-sizing: border-box;
 }
 
 .section:hover {
@@ -66,11 +68,13 @@ body {
     min-width: 320px;
     max-width: 370px; /* 캘린더 영역을 더 좁게 */
 }
-.section.journaling {
-    max-width: 200px !important;
-    min-width: 120px !important;
-    flex: 0.7 1 120px !important;
-    padding: 18px 6px !important;
+.section.journaling,
+.journaling.under-calendar {
+    max-width: 400px !important;
+    min-width: 220px !important;
+    flex: 1 1 0 !important;
+    padding: 28px 18px !important;
+    margin-top: 18px;
 }
 
 /* 감정 캘린더 스타일 */
@@ -286,7 +290,7 @@ body {
 
 /* 채팅 박스 */
 .section.chat-section {
-    max-width: 340px;
+    max-width: 440px;
     min-width: 220px;
     flex: 1 1 0;
     padding: 18px 8px;
@@ -294,8 +298,9 @@ body {
 
 .chat-box {
     width: 100%;
-    min-height: 260px;
-    max-width: 320px;
+    min-height: 420px;
+    max-width: 440px;
+    height: 420px;
     background: #f7fafd;
     border-radius: 12px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.07);
@@ -308,7 +313,6 @@ body {
     border: 1.5px solid #e3eaf5;
     padding: 10px 6px 10px 6px;
     box-sizing: border-box;
-    /* 채팅 박스가 부모 영역을 벗어나지 않도록 */
     overflow: hidden;
     margin: 0 auto;
 }
@@ -544,8 +548,26 @@ button[type="submit"]:hover {
 @media (max-width: 1200px) {
     .container.three-column-layout {
         flex-direction: column;
-        height: auto;
+        align-items: stretch;
+        gap: 24px;
         max-width: 98vw;
+        height: auto;
+    }
+    .section {
+        max-width: 98vw;
+        min-width: 0;
+        height: auto;
+    }
+    .section.mood-tracker,
+    .section.journaling,
+    .section.chat-section {
+        max-width: 98vw;
+        min-width: 0;
+        height: auto;
+    }
+    .chat-box {
+        max-width: 98vw;
+        height: auto;
     }
 }
 
@@ -569,14 +591,20 @@ button[type="submit"]:hover {
 
     .section {
         padding: 18px 6px;
+        height: auto;
     }
 
-    .journaling {
+    .section.mood-tracker,
+    .section.journaling,
+    .section.chat-section {
         padding: 18px 6px;
+        height: auto;
     }
 
     .chat-box {
         padding: 10px 4px;
+        max-width: 99vw;
+        height: auto;
     }
 
     .calendar-day {
@@ -621,4 +649,3 @@ button[type="submit"]:hover {
         font-size: 15px;
     }
 }
-
